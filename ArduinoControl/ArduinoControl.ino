@@ -1,11 +1,13 @@
 #include <WiFiHttpClient.h>
 #include <WiFiWebServer.h>
 #include <Adafruit_NeoPixel.h>
+#include <ArduinoJson.h>
 
 
 // LEDS
 #define NUM_LEDS 64
 #define DATA_PIN 6
+#define MATRIX_WIDTH 8
 Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 
@@ -26,16 +28,33 @@ void printWifiStatus()
   Serial.println(WiFi.SSID());
 }
 
-void changeLEDS()
-{
-  /**
-  for(int dot = 0; dot < NUM_LEDS; dot++) {
-        strip.clear();  // Clear previous LED states
-        strip.setPixelColor(dot, strip.Color(0, 0, 255));  // Set LED to blue
-        strip.show();  // Update the LED strip
-        delay(30);  // Delay for effect
-    }
-    **/
+void updateLED(int row, int col, int r, int g, int b) {
+  int index = row * MATRIX_WIDTH + col; // Convert row & col to LED index
+  strip.setPixelColor(index, strip.Color(r, g, b));
+  strip.show();
+}
+
+void parseWebSocketMessage(String msg) {
+  Serial.println("Parsing message: " + msg);
+
+  StaticJsonDocument<200> doc;
+  DeserializationError error = deserializeJson(doc, msg);
+
+  if (error) {
+    Serial.println("JSON Parsing Failed!");
+    return;
+  }
+
+  int row = doc["row"];
+  int col = doc["col"];
+  String color = doc["color"];
+
+  int r, g, b;
+  if (sscanf(color.c_str(), "rgb(%d, %d, %d)", &r, &g, &b) == 3) {
+    updateLED(row, col, r, g, b);
+  } else {
+    Serial.println("Failed to parse RGB values");
+  }
 }
 
 void setup()
@@ -43,6 +62,7 @@ void setup()
   Serial.begin(115200);
   strip.begin();  // Initialize the LED strip
   strip.show();   // Set all LEDs to off
+  strip.setBrightness(25);
 
   Serial.print(F("Connecting to SSID: "));
   Serial.println(ssid);
@@ -67,24 +87,22 @@ void loop()
 
   while (wsClient.connected())
   {
-    Serial.println("Im alive");
-    // IF WE GET MESSAGE = PARSE
     int messageSize = wsClient.parseMessage();
     if (messageSize > 0)
     {
       Serial.println("Received a message:");
       String msg = wsClient.readString();
-      Serial.println(msg);
+      Serial.println("Received: " + msg);
       
-      changeLEDS();
+      parseWebSocketMessage(msg);
 
-      Serial.println("Sending a message:" + msg);
       wsClient.beginMessage(TYPE_TEXT);
-      wsClient.print("Thanks for message" + msg);
+      wsClient.print("Acknowledged: " + msg);
       wsClient.endMessage();
       
     }
   }
 
   Serial.println("Disconnected from Websocket");
+  delay(1000);
 }
