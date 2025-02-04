@@ -18,6 +18,7 @@ char serverAddress[] = "10.0.0.15";
 int port = 80;
 WiFiClient client;
 WiFiWebSocketClient wsClient(client, serverAddress, port);
+int connected = 0;
 
 void printWifiStatus()
 {
@@ -37,17 +38,12 @@ void updateLED(int row, int col, int r, int g, int b) {
 void parseWebSocketMessage(String msg) {
   Serial.println("Parsing message: " + msg);
 
-  StaticJsonDocument<200> doc;
-  DeserializationError error = deserializeJson(doc, msg);
+  StaticJsonDocument<200> json;
+  deserializeJson(json, msg);
 
-  if (error) {
-    Serial.println("JSON Parsing Failed!");
-    return;
-  }
-
-  int row = doc["row"];
-  int col = doc["col"];
-  String color = doc["color"];
+  int row = json["row"];
+  int col = json["col"];
+  String color = json["color"];
 
   int r, g, b;
   if (sscanf(color.c_str(), "rgb(%d, %d, %d)", &r, &g, &b) == 3) {
@@ -57,16 +53,10 @@ void parseWebSocketMessage(String msg) {
   }
 }
 
-void setup()
-{
-  Serial.begin(115200);
-  strip.begin();  // Initialize the LED strip
-  strip.show();   // Set all LEDs to off
-  strip.setBrightness(25);
-
+void connectToWifi() {
   Serial.print(F("Connecting to SSID: "));
   Serial.println(ssid);
-
+  
   int status = WiFi.begin(ssid, pass);
   delay(1000);
   Serial.println(status);
@@ -75,8 +65,19 @@ void setup()
     delay(500);
     status = WiFi.status();
   }
+}
 
-  // conection finished
+void stripSetUp(){
+  strip.begin();  // Initialize the LED strip
+  strip.show();   // Set all LEDs to off
+  strip.setBrightness(25);
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  stripSetUp();
+  connectToWifi();
   printWifiStatus();
 }
 
@@ -84,9 +85,17 @@ void loop()
 {
   Serial.println("Starting WebSocket client");
   wsClient.begin();
-
+  
+  
   while (wsClient.connected())
   {
+    if (connected == 0){
+      // FIRST message
+      wsClient.beginMessage(TYPE_TEXT);
+      wsClient.print("ARDUINO CONNECTED");
+      wsClient.endMessage();
+      connected = 1;
+    }
     int messageSize = wsClient.parseMessage();
     if (messageSize > 0)
     {
@@ -102,7 +111,8 @@ void loop()
       
     }
   }
-
+  // END OF CONNECTION
+  connected = 0;
   Serial.println("Disconnected from Websocket");
   delay(1000);
 }
