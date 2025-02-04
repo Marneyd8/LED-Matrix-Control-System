@@ -50,6 +50,11 @@ function Drawer({ ws }: Websocket) {
     }));
   };
 
+
+
+
+  // TODO - floating text across the LED, gifs/videos parser to pixelart and then show, establish protocol, make proper drawer
+
   return (
     <div>
       <div className="grid grid-cols-8 gap-0 p-4">
