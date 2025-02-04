@@ -1,4 +1,11 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #define WIFI_SSID "YOUR_SSID"
 #define WIFI_PASS "YOUR_PASSWORD"
 #define SERVER_ADDRESS "YOUR_SERVER_ADDRESS"
-#define SERVER_PORT 80
+#define SERVER_PORT 00
+#define DATA_PIN 0
+#define MATRIX_WIDTH 0
+
+#endif

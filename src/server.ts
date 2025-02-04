@@ -3,8 +3,8 @@ import { WebSocketServer, WebSocket } from 'ws';
 
 // Create HTTP server
 const server = createServer();
-const host: string = process.env.VITE_SERVERADDRESS || '0.0.0.0';;
-const port: number = 80;
+const host: string = process.env.VITE_SERVERADDRESS || '0.0.0.0';
+const port: number = Number(process.env.VITE_SERVERPORT) || 0;
 
 server.listen(port, host, () => {
   console.log(`Server is listening on ${host}:${port}`);

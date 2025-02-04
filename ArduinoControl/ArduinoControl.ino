@@ -2,23 +2,21 @@
 #include <WiFiWebServer.h>
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
+#include "config.h"
 
-
-// LEDS
-#define NUM_LEDS 64
-#define DATA_PIN 6
-#define MATRIX_WIDTH 8
-Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800);
+// LEDS INIT
+Adafruit_NeoPixel strip(MATRIX_WIDTH * MATRIX_WIDTH, DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 
 // WEBSERVER
-char ssid[] = "O2-Internet-923";
-char pass[] = "D4fFpKAg"; 
-char serverAddress[] = "10.0.0.15";
-int port = 80;
+char ssid[] = WIFI_SSID;
+char pass[] = WIFI_PASS; 
+char serverAddress[] = SERVER_ADDRESS;
+int port = SERVER_PORT;
 WiFiClient client;
 WiFiWebSocketClient wsClient(client, serverAddress, port);
 int connected = 0;
+
 
 void printWifiStatus()
 {
