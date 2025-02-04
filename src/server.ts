@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 
 // Create HTTP server
 const server = createServer();
-const host: string = "10.0.0.15";
+const host: string = process.env.VITE_SERVERADDRESS || '0.0.0.0';;
 const port: number = 80;
 
 server.listen(port, host, () => {

@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .env
+ArduinoControl/config.h
 
 # Editor directories and files
 .vscode/*

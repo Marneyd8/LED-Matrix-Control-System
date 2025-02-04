@@ -10,7 +10,7 @@ function WebSocketClient({ setWs }: WebSocketClientProps) {
   const [serverMessage, setServerMessage] = useState<string>('');
   const [ws, setWsLocal] = useState<WebSocket | null>(null);
 
-  const serverIP = '10.0.0.15';
+  const serverIP = import.meta.env.VITE_SERVERADDRESS;
 
   const connectWebSocket = () => {
     const websocket = new WebSocket(`ws://${serverIP}:80`);
