@@ -12,7 +12,7 @@ char serverAddress[] = SERVER_ADDRESS;
 int port = 80;
 WiFiClient client;
 WiFiWebSocketClient wsClient(client, serverAddress, port);
-int connected = 0;
+bool connected = false;
 
 void printWifiStatus()
 {
@@ -84,7 +84,7 @@ void connectToWifi() {
   Serial.println(status);
   while ( status != WL_CONNECTED)
   {
-    delay(500);
+    delay(1000);
     status = WiFi.status();
   }
 }
@@ -123,24 +123,24 @@ void loop()
   
   while (wsClient.connected())
   {
-    if (connected == 0){
+    if (!(connected)){
       // FIRST MESSAGE TO ESTABLISH CONNECTION
       wsClient.beginMessage(TYPE_TEXT);
       wsClient.print("ARDUINO CONNECTED");
       wsClient.endMessage();
-      connected = 1;
+      connected = true;
     }
-    int messageSize = wsClient.parseMessage();
-    if (messageSize > 0)
+    int size = wsClient.parseMessage();
+    if (size > 0)
     {
-      String msg = wsClient.readString();
-      Serial.println("Received: " + msg);
+      String message = wsClient.readString();
+      Serial.println("Received: " + message);
       
-      parseWebSocketMessage(msg);
+      parseWebSocketMessage(message);
     }
   }
   // END OF CONNECTION
-  connected = 0;
+  connected = false;
   Serial.println("Disconnected from Websocket");
   delay(1000);
 }
