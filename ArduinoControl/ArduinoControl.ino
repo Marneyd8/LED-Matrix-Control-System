@@ -12,7 +12,7 @@ Adafruit_NeoPixel strip(MATRIX_WIDTH * MATRIX_WIDTH, DATA_PIN, NEO_GRB + NEO_KHZ
 char ssid[] = WIFI_SSID;
 char pass[] = WIFI_PASS; 
 char serverAddress[] = SERVER_ADDRESS;
-int port = SERVER_PORT;
+int port = 80;
 WiFiClient client;
 WiFiWebSocketClient wsClient(client, serverAddress, port);
 int connected = 0;
