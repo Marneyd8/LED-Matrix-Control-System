@@ -4,7 +4,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 // Create HTTP server
 const server = createServer();
 const host: string = process.env.VITE_SERVERADDRESS || '0.0.0.0';
-const port: number = Number(process.env.VITE_SERVERPORT) || 0;
+const port: number = 80;
 
 server.listen(port, host, () => {
   console.log(`Server is listening on ${host}:${port}`);
@@ -12,7 +12,6 @@ server.listen(port, host, () => {
 
 // Create WebSocket server
 const wss = new WebSocketServer({ server });
-
 // Always first
 let arduinoWs: WebSocket | null = null;
 let websiteWs: WebSocket | null = null;

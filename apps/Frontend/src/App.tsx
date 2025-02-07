@@ -1,6 +1,6 @@
 import { useState } from "react";
-import WebSocketClient from "./WebSocketClient";
-import Drawer from "./Drawer";
+import WebSocketClient from "./components/WebSocketClient";
+import MainPage from "./components/MainPage";
 
 function App() {
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -8,7 +8,7 @@ function App() {
   return (
     <div>
       <WebSocketClient setWs={setWs} />
-      {ws && <Drawer ws={ws} />}
+      {ws && <MainPage ws={ws} />}
     </div>
   );
 }
