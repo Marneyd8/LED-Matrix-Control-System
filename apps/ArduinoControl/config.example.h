@@ -6,5 +6,6 @@
 #define SERVER_ADDRESS "YOUR_SERVER_ADDRESS"
 #define DATA_PIN 0
 #define MATRIX_WIDTH 0
+#define MATRIX_LENGTH 0
 
 #endif

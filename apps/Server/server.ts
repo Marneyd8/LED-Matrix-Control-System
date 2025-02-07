@@ -12,7 +12,6 @@ server.listen(port, host, () => {
 
 // Create WebSocket server
 const wss = new WebSocketServer({ server });
-
 // Always first
 let arduinoWs: WebSocket | null = null;
 let websiteWs: WebSocket | null = null;

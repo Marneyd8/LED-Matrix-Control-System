@@ -4,11 +4,14 @@
 #include <ArduinoJson.h>
 #include "config.h"
 
+// LEDS INIT
+Adafruit_NeoPixel strip(MATRIX_WIDTH * MATRIX_LENGTH, DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 // WEBSERVER CONTROL FUNCTIONS AND VARIABLES
 char ssid[] = WIFI_SSID;
 char pass[] = WIFI_PASS; 
 char serverAddress[] = SERVER_ADDRESS;
+int port = 80;
 int port = 80;
 WiFiClient client;
 WiFiWebSocketClient wsClient(client, serverAddress, port);
@@ -21,6 +24,13 @@ void printWifiStatus()
 
   Serial.print(F("SSID: "));
   Serial.println(WiFi.SSID());
+}
+
+void updateLED(int row, int col, int r, int g, int b) {
+  int index = row * MATRIX_WIDTH + col; // Convert row & col to LED index
+  // FIX
+  strip.setPixelColor(index, strip.Color(r, g, b));
+  strip.show();
 }
 
 void parseWebSocketMessage(String msg) {
