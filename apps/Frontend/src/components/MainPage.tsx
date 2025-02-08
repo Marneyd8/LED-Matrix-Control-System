@@ -1,8 +1,8 @@
-import { Websocket } from "../types/websocket";
+import Drawer from "./Drawer";
 
 
-function MainPage({ ws }: Websocket) {
-  return <div></div>;
+function MainPage() {
+  return <div><Drawer /></div>;
 }
 
 export default  MainPage;

@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import './App.css';
+import '../App.css';
 import { Rgb } from '../types/rgb';
+import { useWebSocket } from './WebSocketContext';
 
 
 function Drawer() {
+  const ws = useWebSocket();
+  
   const [colors, setColors] = useState<string[][]>(new Array(8).fill(null).map(() => new Array(8).fill("rgb(169, 169, 169)")));
 
   const [rgb, setRgb] = useState<Rgb>({ r: 0, g: 0, b: 255 });

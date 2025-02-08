@@ -11,6 +11,9 @@ function WebSocketClient({ setWs }: WebSocketClientProps) {
   const [ws, setWsLocal] = useState<WebSocket | null>(null);
 
   const serverIP = import.meta.env.VITE_SERVERADDRESS;
+  console.log("Environment Variables:", import.meta.env);
+  console.log("VITE_SERVERADDRESS:", import.meta.env.VITE_SERVERADDRESS);
+
 
   const connectWebSocket = () => {
     const websocket = new WebSocket(`ws://${serverIP}:80`);

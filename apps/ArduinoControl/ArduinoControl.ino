@@ -12,7 +12,6 @@ char ssid[] = WIFI_SSID;
 char pass[] = WIFI_PASS; 
 char serverAddress[] = SERVER_ADDRESS;
 int port = 80;
-int port = 80;
 WiFiClient client;
 WiFiWebSocketClient wsClient(client, serverAddress, port);
 bool connected = false;

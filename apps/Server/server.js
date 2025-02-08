@@ -2,10 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var http_1 = require("http");
 var ws_1 = require("ws");
+var dotenv = require("dotenv");
+var path = require("path");
+dotenv.config({ path: path.resolve(__dirname, '../Frontend/.env') });
 // Create HTTP server
 var server = (0, http_1.createServer)();
 var host = process.env.VITE_SERVERADDRESS || '0.0.0.0';
-var port = Number(process.env.VITE_SERVERPORT) || 0;
+var port = 80;
 server.listen(port, host, function () {
     console.log("Server is listening on ".concat(host, ":").concat(port));
 });
