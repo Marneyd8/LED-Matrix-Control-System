@@ -4,5 +4,5 @@ export const WebSocketContext = createContext<WebSocket | null>(null);
 
 export const useWebSocket = () => {
   // REACT CONTEXT
-    return useContext(WebSocketContext);
+  return useContext(WebSocketContext);
 };

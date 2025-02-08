@@ -6,7 +6,7 @@ import { useWebSocket } from './WebSocketContext';
 
 function Drawer() {
   const ws = useWebSocket();
-  
+
   const [colors, setColors] = useState<string[][]>(new Array(8).fill(null).map(() => new Array(8).fill("rgb(169, 169, 169)")));
 
   const [rgb, setRgb] = useState<Rgb>({ r: 0, g: 0, b: 255 });
@@ -32,7 +32,7 @@ function Drawer() {
       prevColors[row][col] = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
       return [...prevColors]; // create a new object = not mutate the existing state directly
     });
-    
+
     if (ws) {
       const colorData = {
         row,
