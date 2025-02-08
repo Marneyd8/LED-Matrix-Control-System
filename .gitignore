@@ -11,9 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
-.env
-ArduinoControl/config.h
-src/server.js
+apps/Frontend/.env
+apps/ArduinoControl/config.h
+apps/Server/server.js
 
 # Editor directories and files
 .vscode/*
