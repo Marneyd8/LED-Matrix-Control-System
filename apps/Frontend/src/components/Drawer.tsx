@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import '../App.css';
 import { Rgb } from '../types/rgb';
 import { useWebSocket } from './WebSocketContext';
 
@@ -58,22 +57,7 @@ function Drawer() {
   // TODO - floating text across the LED, gifs/videos parser to pixelart and then show, establish protocol, make proper drawer
 
   return (
-    <div>
-      <div className="grid grid-cols-8 gap-0 p-4">
-        {colors.map((row, rowIndex) =>
-          row.map((color, colIndex) => (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              className="w-10 h-10 border border-gray-500 cursor-pointer"
-              style={{ backgroundColor: color }}
-              onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-              onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
-              onMouseUp={() => handleMouseUp()}
-            />
-          ))
-        )}
-      </div>
-
+    <div className='flex flex-row justify-center'>
       {/* RGB Controls */}
       <div className="mt-4">
         <label>
@@ -115,6 +99,22 @@ function Drawer() {
           {rgb.b}
         </label>
       </div>
+      <div className="grid grid-cols-8 gap-0 p-12">
+        {colors.map((row, rowIndex) =>
+          row.map((color, colIndex) => (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              className="w-10 h-10 border border-gray-500 cursor-pointer"
+              style={{ backgroundColor: color }}
+              onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+              onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+              onMouseUp={() => handleMouseUp()}
+            />
+          ))
+        )}
+      </div>
+
+      
     </div>
   );
 }

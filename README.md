@@ -3,10 +3,10 @@ This will help you configure the needed files and run both the Frontend and Back
 
 ## Configuration Files
 Create configuration files from .example
-### .env (Environment Variables)
+### .env (Environment Variables in ./apps/Frontend folder)
 - VITE_SERVERADDRESS &rarr; Your WIFI adress (you can find IPv4 Address value by using ipconfig in cmd) 
 
-### config.h (Hardware Configuration in ArduinoControl folder)
+### config.h (Hardware Configuration in ./apps/ArduinoControl folder)
 - WIFI_SSID &rarr; Your WiFi network name.
 - WIFI_PASS &rarr; Your WiFi password.
 - SERVER_ADDRESS &rarr; Your WIFI adress (you can find IPv4 Address value by using ipconfig in cmd) 

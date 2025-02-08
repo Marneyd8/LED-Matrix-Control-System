@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type WebSocketClientProps = {
   setWs: React.Dispatch<React.SetStateAction<WebSocket | null>>;
@@ -6,34 +6,20 @@ type WebSocketClientProps = {
 
 function WebSocketClient({ setWs }: WebSocketClientProps) {
   const [connected, setConnected] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
-  const [serverMessage, setServerMessage] = useState<string>('');
-  const [ws, setWsLocal] = useState<WebSocket | null>(null);
-
   const serverIP = import.meta.env.VITE_SERVERADDRESS;
-  console.log("Environment Variables:", import.meta.env);
-  console.log("VITE_SERVERADDRESS:", import.meta.env.VITE_SERVERADDRESS);
-
+  const isMounted = useRef(false);
 
   const connectWebSocket = () => {
     const websocket = new WebSocket(`ws://${serverIP}:80`);
     websocket.onopen = () => {
       console.log('Connected to WebSocket server');
       setConnected(true);
-      setWsLocal(websocket);
       setWs(websocket); // Update the parent App state with the WebSocket
-    };
-
-    websocket.onmessage = async (event) => {
-      const text = await new Response(event.data).text();
-      console.log('Message from server:', text);
-      setServerMessage(text);
     };
 
     websocket.onclose = () => {
       console.log('Disconnected from server');
       setConnected(false);
-      setWsLocal(null);
       setWs(null); // Clear WebSocket in the parent component
     };
 
@@ -42,40 +28,28 @@ function WebSocketClient({ setWs }: WebSocketClientProps) {
     };
   };
 
-  const sendMessage = () => {
-    if (connected && ws) {
-      ws.send(message);
-      console.log('Sent message:', message);
-    } else {
-      console.log('WebSocket not connected');
+  useEffect(() => {
+    // Make sure the effect only runs once
+    if (!isMounted.current) {
+      connectWebSocket();
+      isMounted.current = true; // Ensure we only run this once
     }
-  };
+  }, []);
 
   return (
-    <div>
-      <h1>Arduino WebSocket Client</h1>
-      {!connected ? (
-        <button onClick={connectWebSocket}>Connect to WebSocket</button>
-      ) : (
-        <div>
-          <h2>Connected</h2>
+    <div className="bg-gray-800">
+      <div className="text-4xl text-white p-2 pt-8">
+        <div>Control System for LED Matrix Display</div>
+      </div>
+
+      <div className="p-4">
+        {!connected ? (
           <div>
-            <label>Message to Arduino:</label>
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <button onClick={sendMessage}>Send</button>
-          </div>
-        </div>
-      )}
-      {serverMessage && (
-        <div>
-          <h3>Message from Arduino:</h3>
-          <p>{serverMessage}</p>
-        </div>
-      )}
+            <h2>Server: Unable to connect to the server</h2>
+            <button onClick={connectWebSocket}>Try again</button>
+          </div>) :
+          (<h2>Server: Connected</h2>)}
+      </div>
     </div>
   );
 }
