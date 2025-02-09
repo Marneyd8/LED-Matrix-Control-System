@@ -16,11 +16,11 @@ const MainPage = () => {
 
   return (
     <div className="flex">
-      <div className="w-[15%] bg-second">
+      <div className="w-[20%] bg-second">
         <Sidebar />
       </div>
 
-      <div className="w-[85%]">
+      <div className="w-[80%]">
         <div className="flex justify-evenly p-6 bg-second m-5">
           <button onClick={() => handleImageClick("Drawer")} className="w-40 h-24 bg-main rounded-lg flex flex-col items-center justify-center text-white">
             <span>Drawer</span>
