@@ -9,7 +9,7 @@ function App() {
 
   return (
     <WebSocketContext.Provider value={ws}>
-      <div className="flex flex-col w-screen text-center">
+      <div className="w-screen text-center font-mono mt-5">
         <div className="h-[18%]">
           <WebSocketClient setWs={setWs} />
         </div>

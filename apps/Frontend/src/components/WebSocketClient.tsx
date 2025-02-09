@@ -37,7 +37,7 @@ function WebSocketClient({ setWs }: WebSocketClientProps) {
   }, []);
 
   return (
-    <div className="bg-gray-800">
+    <div className="bg-main">
       <div className="text-4xl text-white p-2 pt-8">
         <div>Control System for LED Matrix Display</div>
       </div>
@@ -45,7 +45,7 @@ function WebSocketClient({ setWs }: WebSocketClientProps) {
       <div className="p-4">
         {!connected ? (
           <div>
-            <h2>Server: Unable to connect to the server</h2>
+            <h2>Server: Unable to connect</h2>
             <button onClick={connectWebSocket}>Try again</button>
           </div>) :
           (<h2>Server: Connected</h2>)}
