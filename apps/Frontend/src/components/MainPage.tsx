@@ -5,15 +5,16 @@ import ImageLoader from "./ImageLoader";
 import Sidebar from "./Sidebar";
 import Typer from "./Typer";
 import pencil from "../assets/pencil.png";
+import Demo from "./Demo";
 
 const MainPage = () => {
-  // State to hold the selected function (component)
+  // State to hold the selected component
   const [selectedFunction, setSelectedFunction] = useState<string>("Drawer");
 
-  const handleImageClick = (functionName: string) => {
-    setSelectedFunction(functionName);
+  const handleFunctionClick = (name: string) => {
+    setSelectedFunction(name);
   };
-
+  // TODO IMAGES
   return (
     <div className="flex">
       <div className="w-[20%] bg-second">
@@ -22,21 +23,25 @@ const MainPage = () => {
 
       <div className="w-[80%]">
         <div className="flex justify-evenly p-6 bg-second m-5">
-          <button onClick={() => handleImageClick("Drawer")} className="w-40 h-24 bg-main rounded-lg flex flex-col items-center justify-center text-white">
+          <button onClick={() => handleFunctionClick("Drawer")} className="btn-fucniton">
             <span>Drawer</span>
-            <img src={pencil} alt="Drawer" className="w-40 h-14 object-cover mt-2 rounded-lg" />
+            <img src={pencil} alt="Drawer"/>
           </button>
-          <button onClick={() => handleImageClick("Typer")} className="w-40 h-24 bg-main rounded-lg flex flex-col items-center justify-center text-white">
+          <button onClick={() => handleFunctionClick("Typer")} className="btn-fucniton">
             <span>Typer</span>
-            <img src="path/to/image2.jpg" alt="Typer" className="w-40 h-14 object-cover mt-2 rounded-lg" />
+            <img src="path/to/image2.jpg" alt="Typer"/>
           </button>
-          <button onClick={() => handleImageClick("ImageLoader")} className="w-40 h-24 bg-main rounded-lg flex flex-col items-center justify-center text-white">
+          <button onClick={() => handleFunctionClick("ImageLoader")} className="btn-fucniton">
             <span>ImageLoader</span>
-            <img src="path/to/image3.jpg" alt="ImageLoader" className="w-40 h-14 object-cover mt-2 rounded-lg" />
+            <img src="path/to/image3.jpg" alt="ImageLoader"/>
           </button>
-          <button onClick={() => handleImageClick("GifLoader")} className="w-40 h-24 bg-main rounded-lg flex flex-col items-center justify-center text-white">
+          <button onClick={() => handleFunctionClick("GifLoader")} className="btn-fucniton">
             <span>GifLoader</span>
-            <img src="path/to/image4.jpg" alt="GifLoader" className="w-40 h-14 object-cover mt-2 rounded-lg" />
+            <img src="path/to/image4.jpg" alt="GifLoader"/>
+          </button>
+          <button onClick={() => handleFunctionClick("Demo")} className="btn-fucniton">
+            <span>Demo</span>
+            <img src="path/to/image5.jpg" alt="Demo"/>
           </button>
         </div>
   
@@ -45,6 +50,7 @@ const MainPage = () => {
           {selectedFunction === "Typer" && <Typer />}
           {selectedFunction === "ImageLoader" && <ImageLoader />}
           {selectedFunction === "GifLoader" && <GifLoader />}
+          {selectedFunction === "Demo" && <Demo />}
         </div>
       </div>
     </div>

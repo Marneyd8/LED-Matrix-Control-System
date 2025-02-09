@@ -16,3 +16,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.btn {
+  @apply bg-main hover:bg-main_dark rounded-lg text-center active:scale-95 shadow-md transition-all duration-300;
+}
+
+.btn-fucniton {
+  @apply btn w-40 h-24 flex flex-col items-center justify-center;
+}
+
+.btn-fucniton img {
+  @apply w-40 h-14 object-cover mt-2 rounded-lg;
+}

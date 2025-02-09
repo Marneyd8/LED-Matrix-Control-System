@@ -4,23 +4,36 @@ type WebSocketClientProps = {
   setWs: React.Dispatch<React.SetStateAction<WebSocket | null>>;
 };
 
+/**
+ * WebSocketClient component manages the WebSocket connection.
+ *
+ * @param setWs The setter function to update the WebSocket state.
+ * @returns {ReactNode} A React element that renders the WebSocket connection status.
+ */
 function WebSocketClient({ setWs }: WebSocketClientProps) {
+  const serverIP: string = import.meta.env.VITE_SERVERADDRESS;
   const [connected, setConnected] = useState<boolean>(false);
-  const serverIP = import.meta.env.VITE_SERVERADDRESS;
-  const isMounted = useRef(false);
+  const isMounted = useRef<boolean>(false);
 
   const connectWebSocket = () => {
     const websocket = new WebSocket(`ws://${serverIP}:80`);
     websocket.onopen = () => {
-      console.log('Connected to WebSocket server');
-      setConnected(true);
-      setWs(websocket); // Update the parent App state with the WebSocket
+      websocket.send('WEBSITE CONNECTED');
     };
+
+    websocket.onmessage = (message) => {
+      const msg = message.data;
+      if (msg == "SUCESS") {
+        console.log('Connected to WebSocket server');
+        setConnected(true);
+        setWs(websocket);
+      }
+    }
 
     websocket.onclose = () => {
       console.log('Disconnected from server');
       setConnected(false);
-      setWs(null); // Clear WebSocket in the parent component
+      setWs(null);
     };
 
     websocket.onerror = (error) => {
@@ -29,12 +42,11 @@ function WebSocketClient({ setWs }: WebSocketClientProps) {
   };
 
   useEffect(() => {
-    // Make sure the effect only runs once
     if (!isMounted.current) {
       connectWebSocket();
-      isMounted.current = true; // Ensure we only run this once
+      isMounted.current = true; // we only run this once
     }
-  }, []);
+  }, []); // [] => run on startup
 
   return (
     <div className="bg-main">

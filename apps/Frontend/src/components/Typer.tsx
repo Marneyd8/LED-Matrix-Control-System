@@ -1,6 +1,10 @@
-
 function Typer() {
-  return <div></div>;
+
+  // TODO - write llter - convert to pixelart - send to arduino
+  return (
+    <div>
+    </div>
+  );
 }
 
 export default Typer;

@@ -1,6 +1,6 @@
 import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
-import * as dotenv from 'dotenv'
+import * as dotenv from 'dotenv';
 import * as path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../Frontend/.env') });
@@ -16,44 +16,40 @@ server.listen(port, host, () => {
 
 // Create WebSocket server
 const wss = new WebSocketServer({ server });
-// Always first
+
 let arduinoWs: WebSocket | null = null;
 let websiteWs: WebSocket | null = null;
 
 wss.on('connection', (ws: WebSocket) => {
-  // Assign the first WebSocket connection to arduinoWs, then the next to websiteWs
-  if (arduinoWs === null) {
-    arduinoWs = ws;
-    console.log('Connection opened on Arduino');
-  } else if (websiteWs === null) {
-    websiteWs = ws;
-    console.log('Connection opened on Website');
-  } else {
-    console.log('Connection opened on someone who is not supposed to be here???');
-  }
 
-  // When a message is received from either arduinoWs or websiteWs, forward it to the other
-  ws.on('message', (msg: string | Buffer) => {
-    console.log('Message received:', msg.toString());
-
-    if (ws === websiteWs && arduinoWs !== null) {
-      console.log('Forwarding message to Arduino:', msg.toString());
-      arduinoWs.send(msg);
-    }
-
-    if (ws === arduinoWs && websiteWs !== null) {
-      console.log('Forwarding message to Website:', msg.toString());
-      websiteWs.send(msg);
+  ws.on('message', (message: string) => {
+    const msg = message.toString();
+    console.log(msg);
+    if (msg === 'ARDUINO CONNECTED' && arduinoWs === null) {
+      arduinoWs = ws;
+      console.log('Arduino connection established');
+      ws.send("SUCESS");
+    } else if (msg === 'WEBSITE CONNECTED' && websiteWs === null) {
+      websiteWs = ws;
+      console.log('Website connection established');
+      ws.send("SUCESS");
+    }else{
+      // Forward messages between Arduino and Website
+      if (ws === websiteWs && arduinoWs) {
+        arduinoWs.send(msg);
+      } else if (ws === arduinoWs && websiteWs) {
+        websiteWs.send(msg);
+      }
     }
   });
 
-  // When a WebSocket connection is closed
+  // Handle WebSocket connection close
   ws.on('close', () => {
-    console.log('Connection closed');
-    // Reset the respective WebSocket connection reference when closed
     if (ws === arduinoWs) {
+      console.log('Arduino WebSocket closed');
       arduinoWs = null;
     } else if (ws === websiteWs) {
+      console.log('Website WebSocket closed');
       websiteWs = null;
     }
   });
