@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { WebSocketContext } from "./components/WebSocketContext";
-import WebSocketClient from "./components/WebSocketClient";
+import { WebSocketContext } from "./components/Websocket/WebSocketContext";
+import WebSocketClient from "./components/Websocket/WebSocketClient";
 import MainPage from "./components/MainPage";
 
 

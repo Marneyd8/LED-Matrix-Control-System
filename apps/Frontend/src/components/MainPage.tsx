@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Drawer from "./Drawer";
-import GifLoader from "./GifLoader";
-import ImageLoader from "./ImageLoader";
+import Drawer from "./Drawer/Drawer";
+import GifLoader from "./Loaders/GifLoader";
+import ImageLoader from "./Loaders/ImageLoader";
 import Sidebar from "./Sidebar";
-import Typer from "./Typer";
+import Typer from "./Typer/Typer";
 import pencil from "../assets/pencil.png";
 import Demo from "./Demo";
 
