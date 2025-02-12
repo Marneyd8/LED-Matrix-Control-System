@@ -1,30 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Row from "./Row";
 import { useWebSocket } from "../Websocket/WebSocketContext";
+import { Rgb } from "../../types/rgb";
 
-function DrawingPanel(props: { width: number; height: number; selectedColor: Rgb }) {
-  const { width, height, selectedColor } = props;
+function DrawingPanel(props: { selectedColor: Rgb }) {
+  const { selectedColor } = props;
   const ws = useWebSocket();  // Get WebSocket instance
   const [isDrawing, setIsDrawing] = useState(false);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
 
-  function handleMouseDown() {
-    setIsDrawing(true);
-  }
+  useEffect(() => {
+    if (ws) {
+      ws.send("PARAMETERS");
 
-  function handleMouseUp() {
-    setIsDrawing(false);
-  }
+      ws.onmessage = (message) => {
+        try {
+          const data = JSON.parse(message.data);
+          if (data.width && data.height) {
+            setWidth(data.width);
+            setHeight(data.height);
+          }
+        } catch (error) {
+          console.error("Error parsing WebSocket message:", error);
+        }
+      };
+    }
+  }, [ws]);
 
   // Function to send the color update to WebSocket
   const updateColor = (row: number, col: number) => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
+    if (ws) {
       const colorData = {
         row,
         col,
-        color: `rgb(${selectedColor.r}, ${selectedColor.g}, ${selectedColor.b})`,
+        r: selectedColor.r,
+        g: selectedColor.g,
+        b: selectedColor.b
       };
       ws.send(JSON.stringify(colorData));  // Send to Arduino
       console.log("Sent to WebSocket:", colorData);
+      
     } else {
       console.error("WebSocket is not open");
     }
@@ -33,9 +49,9 @@ function DrawingPanel(props: { width: number; height: number; selectedColor: Rgb
   return (
     <div
       className="flex flex-col align-center p-10"
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp} // Stops drawing when mouse leaves panel
+      onMouseDown={() => setIsDrawing(true)}
+      onMouseUp={() => setIsDrawing(false)}
+      onMouseLeave={() => setIsDrawing(false)} // Stops drawing when mouse leaves panel
     >
       {Array.from({ length: height }).map((_, rowIndex) => (
         <Row

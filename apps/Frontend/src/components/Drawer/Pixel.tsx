@@ -3,7 +3,7 @@ import { Rgb } from "../../types/rgb";
 
 function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; updateColor: Function }) {
   const { selectedColor, isDrawing, updateColor } = props;
-  const [pixelColor, setPixelColor] = useState({ r: 0, g: 0, b: 255 });
+  const [pixelColor, setPixelColor] = useState({ r: 0, g: 0, b: 0 });
   const [tempColor, setTempColor] = useState(null);
 
   function applyColor() {
@@ -20,6 +20,8 @@ function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; updateColor: Fun
       setTempColor(selectedColor); // Only preview color
     }
   }
+
+  
 
   function handleMouseLeave() {
     setTempColor(null);

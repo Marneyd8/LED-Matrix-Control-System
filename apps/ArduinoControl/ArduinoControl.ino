@@ -4,9 +4,6 @@
 #include <ArduinoJson.h>
 #include "config.h"
 
-// LEDS INIT
-Adafruit_NeoPixel strip(MATRIX_WIDTH * MATRIX_LENGTH, DATA_PIN, NEO_GRB + NEO_KHZ800);
-
 // WEBSERVER CONTROL FUNCTIONS AND VARIABLES
 char ssid[] = WIFI_SSID;
 char pass[] = WIFI_PASS; 
@@ -25,50 +22,42 @@ void printWifiStatus()
   Serial.println(WiFi.SSID());
 }
 
-void updateLED(int row, int col, int r, int g, int b) {
-  int index = row * MATRIX_WIDTH + col; // Convert row & col to LED index
-  // FIX
-  strip.setPixelColor(index, strip.Color(r, g, b));
-  strip.show();
-}
-
 void parseWebSocketMessage(String msg) {
-  // static json - slightly faster then dynamic json
-  StaticJsonDocument<200> json;
-  if (!deserializeJson(json, msg)) {
-    Serial.println("Failed to parse JSON");
+  Serial.print("Received message: ");
+  Serial.println(msg);
+
+  StaticJsonDocument<256> json;
+  DeserializationError error = deserializeJson(json, msg);
+  if (error) {
+    Serial.print("JSON Parsing Error: ");
+    Serial.println(error.f_str());
     return;
   }
 
   int row = json["row"];
   int col = json["col"];
-  String color = json["color"];
-  
-  int r, g, b;
-  if (parseRGB(color, r, g, b)) {
-    // UPDATE LEDS BASED ON RECIEVED JSON
+  int r = json["r"];
+  int g = json["g"];
+  int b = json["b"];
+
+  if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
     updateLED(row, col, r, g, b);
-    // SEND CONFIRMATION AFTER UPDATING MATRIX
     sendWebSocketConfirmation(row, col, r, g, b);
   } else {
     Serial.println("Failed to parse RGB values");
   }
 }
 
-bool parseRGB(String color, int &r, int &g, int &b) {
-  color.replace("rgb(", "");
-  color.replace(")", "");
 
-  int firstComma = color.indexOf(',');
-  int secondComma = color.lastIndexOf(',');
-  
-  if (firstComma > 0 && secondComma > firstComma) {
-    r = color.substring(0, firstComma).toInt();
-    g = color.substring(firstComma + 1, secondComma).toInt();
-    b = color.substring(secondComma + 1).toInt();
-    return true;
-  }
-  return false;
+void sendParameters(String msg) {
+  StaticJsonDocument<200> responseJson;
+  responseJson["width"] = MATRIX_WIDTH;
+  responseJson["height"] = MATRIX_LENGTH;
+  String response;
+  serializeJson(responseJson, response);
+  wsClient.beginMessage(TYPE_TEXT);
+  wsClient.print(response);
+  wsClient.endMessage();
 }
 
 void sendWebSocketConfirmation(int row, int col, int r, int g, int b) {
@@ -81,7 +70,9 @@ void sendWebSocketConfirmation(int row, int col, int r, int g, int b) {
   
   String response;
   serializeJson(responseJson, response);
-  webSocket.sendTXT(response);
+  wsClient.beginMessage(TYPE_TEXT);
+  wsClient.print(response);
+  wsClient.endMessage();
 }
 
 void connectToWifi() {
@@ -144,8 +135,12 @@ void loop()
     {
       String message = wsClient.readString();
       Serial.println("Received: " + message);
-      
-      parseWebSocketMessage(message);
+
+      if (message == "PARAMETERS"){
+        sendParameters(message);
+      }else{
+        parseWebSocketMessage(message);
+      }
     }
   }
   // END OF CONNECTION
