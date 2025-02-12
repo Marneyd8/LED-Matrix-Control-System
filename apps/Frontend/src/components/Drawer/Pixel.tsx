@@ -1,10 +1,29 @@
 import { useState } from "react";
 import { Rgb } from "../../types/rgb";
+import { useWebSocket } from "../Websocket/WebSocketContext";
 
-function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; updateColor: Function }) {
-  const { selectedColor, isDrawing, updateColor } = props;
+function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; row: number; col: number }) {
+  const { selectedColor, isDrawing, row, col } = props;
   const [pixelColor, setPixelColor] = useState({ r: 0, g: 0, b: 0 });
   const [tempColor, setTempColor] = useState(null);
+  const ws = useWebSocket();
+
+  // Function to send the color update to WebSocket
+  const updateColor = () => {
+    if (ws) {
+      const colorData = {
+        row,
+        col,
+        r: selectedColor.r,
+        g: selectedColor.g,
+        b: selectedColor.b
+      };
+      ws.send(JSON.stringify(colorData));  // Send to Arduino
+      console.log("Sent to WebSocket:", colorData);
+    } else {
+      console.error("WebSocket is not open");
+    }
+  };
 
   function applyColor() {
     setPixelColor(selectedColor);
@@ -21,8 +40,6 @@ function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; updateColor: Fun
     }
   }
 
-  
-
   function handleMouseLeave() {
     setTempColor(null);
   }
@@ -31,6 +48,7 @@ function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; updateColor: Fun
     applyColor(); // Immediately apply color on click
   }
 
+  // TODO change w/h based on number of pixels
   return (
     <div
       className="w-6 h-6"

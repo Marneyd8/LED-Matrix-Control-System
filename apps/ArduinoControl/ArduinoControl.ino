@@ -23,9 +23,6 @@ void printWifiStatus()
 }
 
 void parseWebSocketMessage(String msg) {
-  Serial.print("Received message: ");
-  Serial.println(msg);
-
   StaticJsonDocument<256> json;
   DeserializationError error = deserializeJson(json, msg);
   if (error) {

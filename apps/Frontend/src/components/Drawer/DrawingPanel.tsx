@@ -13,7 +13,6 @@ function DrawingPanel(props: { selectedColor: Rgb }) {
   useEffect(() => {
     if (ws) {
       ws.send("PARAMETERS");
-
       ws.onmessage = (message) => {
         try {
           const data = JSON.parse(message.data);
@@ -26,25 +25,9 @@ function DrawingPanel(props: { selectedColor: Rgb }) {
         }
       };
     }
-  }, [ws]);
+  }, []);
 
-  // Function to send the color update to WebSocket
-  const updateColor = (row: number, col: number) => {
-    if (ws) {
-      const colorData = {
-        row,
-        col,
-        r: selectedColor.r,
-        g: selectedColor.g,
-        b: selectedColor.b
-      };
-      ws.send(JSON.stringify(colorData));  // Send to Arduino
-      console.log("Sent to WebSocket:", colorData);
-      
-    } else {
-      console.error("WebSocket is not open");
-    }
-  };
+  
 
   return (
     <div
@@ -60,7 +43,6 @@ function DrawingPanel(props: { selectedColor: Rgb }) {
           width={width}
           selectedColor={selectedColor}
           isDrawing={isDrawing}
-          updateColor={updateColor}
         />
       ))}
     </div>

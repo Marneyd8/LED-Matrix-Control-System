@@ -1,8 +1,8 @@
 import { Rgb } from "../../types/rgb";
 import Pixel from "./Pixel";
 
-function Row(props: { width: number; rowIndex: number; selectedColor: Rgb; isDrawing: boolean; updateColor: Function }) {
-  const { width, rowIndex, selectedColor, isDrawing, updateColor } = props;
+function Row(props: { width: number; rowIndex: number; selectedColor: Rgb; isDrawing: boolean; }) {
+  const { width, rowIndex, selectedColor, isDrawing } = props;
 
   return (
     <div className="flex">
@@ -11,8 +11,8 @@ function Row(props: { width: number; rowIndex: number; selectedColor: Rgb; isDra
           key={colIndex}
           selectedColor={selectedColor}
           isDrawing={isDrawing}
-          updateColor={() => updateColor(rowIndex, colIndex)}  // Use rowIndex here
-        />
+          row={rowIndex}
+          col={colIndex} />
       ))}
     </div>
   );
