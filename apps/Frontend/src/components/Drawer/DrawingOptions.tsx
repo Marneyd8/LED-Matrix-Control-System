@@ -1,7 +1,9 @@
 import { Rgb } from "../../types/rgb";
+import { useWebSocket } from "../Websocket/WebSocketContext";
 
 function DrawingOptions(props: { rgb: Rgb, setRgb: React.Dispatch<React.SetStateAction<Rgb>> }) {
   const { rgb, setRgb } = props;
+  const ws = useWebSocket();
   const colorPalette = [
     "#FF0000", "#00FF00", "#0000FF", "#FFFF00",
     "#FF00FF", "#00FFFF", "#FFFFFF", "#000000"
@@ -59,13 +61,6 @@ function DrawingOptions(props: { rgb: Rgb, setRgb: React.Dispatch<React.SetState
 
       {/* Hex Input */}
       <input type="text" value={rgbToHex(rgb.r, rgb.g, rgb.b)} onChange={handleHexChange} className="mt-2 p-1 border" maxLength={7} />
-
-      {/* Action Buttons */}
-      <div className="p-5">
-        <button className="btn p-3 m-3">FILL</button>
-        <button className="btn p-3 m-3">CLEAR</button>
-        <button className="btn p-3 m-3">EXPORT</button>
-      </div>
     </div>
   );
 }

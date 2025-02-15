@@ -27,7 +27,7 @@ function DrawingPanel(props: { selectedColor: Rgb }) {
     }
   }, []);
 
-  
+
 
   return (
     <div
@@ -45,6 +45,12 @@ function DrawingPanel(props: { selectedColor: Rgb }) {
           isDrawing={isDrawing}
         />
       ))}
+
+      <div className="p-5">
+        <button className="btn p-3 m-3">FILL</button>
+        <button className="btn p-3 m-3">CLEAR</button>
+        <button className="btn p-3 m-3">EXPORT</button>
+      </div>
     </div>
   );
 }
