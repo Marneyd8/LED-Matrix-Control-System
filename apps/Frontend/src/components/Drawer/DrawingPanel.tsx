@@ -5,13 +5,12 @@ import { Rgb } from "../../types/rgb";
 
 function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.SetStateAction<Rgb>> }) {
   const { selectedColor, setRgb } = props;
-  const ws = useWebSocket();  // Get WebSocket instance
+  const ws = useWebSocket();
   const [isDrawing, setIsDrawing] = useState(false);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
-
-  // Track if fill action is triggered
   const [fillButtonClicked, setFillButtonClicked] = useState<boolean>(false);
+  const [brightness, setBrightness] = useState(25);
 
   useEffect(() => {
     if (ws) {
@@ -30,12 +29,28 @@ function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.
     }
   }, [ws]);
 
-  const handleAction = (actionType: string, color: SetStateAction<Rgb>) => {
-    setFillButtonClicked(true);
-    setRgb(color); // Set the new RGB color
+  const handleAction = (action: string, value: any) => {
+    let data = null;
+    if (action == "FILL"){
+      setFillButtonClicked(true);
+      setRgb(value); // Set the new RGB color
+      data = {
+        action: action,
+        r: value.r,
+        g: value.g,
+        b: value.b,
+      };
+    }
+    if (action === "BRIGHTNESS") {
+      setBrightness(value); // Set the brightness state when brightness changes
+      data = {
+        action: action,
+        value: value,
+      }
+    }
     if (ws) {
-      const data = { action: actionType, color }; // Pass dynamic color based on the action
-      ws.send(JSON.stringify(data));
+      ws.send(JSON.stringify(data));  // Send to Arduino
+      console.log("Sent to WebSocket:", data);
     }
   };
 
@@ -64,16 +79,28 @@ function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.
         />
       ))}
       <div className="p-5">
-        <button className="btn p-3 m-3" onClick={() => handleAction('FILL', selectedColor)}>
+        <button className="btn p-3 m-3" onClick={() => handleAction("FILL", selectedColor)}>
           FILL
         </button>
-        <button className="btn p-3 m-3" onClick={() => handleAction('CLEAR', { r: 0, g: 0, b: 0 })}>
+        <button className="btn p-3 m-3" onClick={() => handleAction("FILL", { r: 0, g: 0, b: 0 })}>
           CLEAR
         </button>
         <button className="btn p-3 m-3" onClick={handleExport}>
           EXPORT
         </button>
       </div>
+      <label>
+        BRIGHTNESS
+        <input 
+          type="range" 
+          name="brightness" 
+          min="0" 
+          max="255" 
+          value={brightness} 
+          onChange={(e) => handleAction("BRIGHTNESS", Number(e.target.value))} // Pass the updated value
+        />
+        <span>{brightness}</span> {/* Display the current brightness value */}
+      </label>
     </div>
   );
 }

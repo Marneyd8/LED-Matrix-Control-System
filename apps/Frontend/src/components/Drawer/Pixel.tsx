@@ -12,6 +12,7 @@ function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; row: number; col
   const updateColor = () => {
     if (ws) {
       const colorData = {
+        action: "UPDATE",
         row,
         col,
         r: selectedColor.r,
@@ -26,8 +27,8 @@ function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; row: number; col
   };
 
   function applyColor() {
-    setPixelColor(selectedColor);
     updateColor();  // Send color update to WebSocket
+    setPixelColor(selectedColor);
     setTempColor(null);
   }
 
