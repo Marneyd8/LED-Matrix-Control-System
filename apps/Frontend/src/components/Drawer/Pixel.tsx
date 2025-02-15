@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Rgb } from "../../types/rgb";
 import { useWebSocket } from "../Websocket/WebSocketContext";
 
-function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; row: number; col: number }) {
-  const { selectedColor, isDrawing, row, col } = props;
+function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; row: number; col: number; fillButtonClicked: boolean; setFillButtonClicked: React.Dispatch<React.SetStateAction<boolean>> }) {
+  const { selectedColor, isDrawing, row, col, fillButtonClicked, setFillButtonClicked } = props;
   const [pixelColor, setPixelColor] = useState({ r: 0, g: 0, b: 0 });
   const [tempColor, setTempColor] = useState(null);
   const ws = useWebSocket();
@@ -47,6 +47,14 @@ function Pixel(props: { selectedColor: Rgb; isDrawing: boolean; row: number; col
   function handleMouseDown() {
     applyColor(); // Immediately apply color on click
   }
+
+  useEffect(() => {
+    if (fillButtonClicked) {
+      setPixelColor(selectedColor);
+      // Reset the button click state *after* the fill has occurred
+      setFillButtonClicked(false);
+    }
+  }, [fillButtonClicked]); // Add selectedColor as a dependency
 
   // TODO change w/h based on number of pixels
   return (

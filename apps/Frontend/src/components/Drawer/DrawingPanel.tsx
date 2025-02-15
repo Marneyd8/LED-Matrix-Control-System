@@ -1,14 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import Row from "./Row";
 import { useWebSocket } from "../Websocket/WebSocketContext";
 import { Rgb } from "../../types/rgb";
 
-function DrawingPanel(props: { selectedColor: Rgb }) {
-  const { selectedColor } = props;
+function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.SetStateAction<Rgb>> }) {
+  const { selectedColor, setRgb } = props;
   const ws = useWebSocket();  // Get WebSocket instance
   const [isDrawing, setIsDrawing] = useState(false);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
+
+  // Track if fill action is triggered
+  const [fillButtonClicked, setFillButtonClicked] = useState<boolean>(false);
 
   useEffect(() => {
     if (ws) {
@@ -25,9 +28,22 @@ function DrawingPanel(props: { selectedColor: Rgb }) {
         }
       };
     }
-  }, []);
+  }, [ws]);
+
+  const handleAction = (actionType: string, color: SetStateAction<Rgb>) => {
+    setFillButtonClicked(true);
+    setRgb(color); // Set the new RGB color
+    if (ws) {
+      const data = { action: actionType, color }; // Pass dynamic color based on the action
+      ws.send(JSON.stringify(data));
+    }
+  };
 
 
+  // Handle export action
+  const handleExport = () => {
+    // TODO
+  };
 
   return (
     <div
@@ -39,17 +55,24 @@ function DrawingPanel(props: { selectedColor: Rgb }) {
       {Array.from({ length: height }).map((_, rowIndex) => (
         <Row
           key={rowIndex}
-          rowIndex={rowIndex}  // Pass the row index down
+          rowIndex={rowIndex}
           width={width}
           selectedColor={selectedColor}
           isDrawing={isDrawing}
+          fillButtonClicked={fillButtonClicked} // Pass the button click state
+          setFillButtonClicked={setFillButtonClicked} // Pass the setter function
         />
       ))}
-
       <div className="p-5">
-        <button className="btn p-3 m-3">FILL</button>
-        <button className="btn p-3 m-3">CLEAR</button>
-        <button className="btn p-3 m-3">EXPORT</button>
+        <button className="btn p-3 m-3" onClick={() => handleAction('FILL', selectedColor)}>
+          FILL
+        </button>
+        <button className="btn p-3 m-3" onClick={() => handleAction('CLEAR', { r: 0, g: 0, b: 0 })}>
+          CLEAR
+        </button>
+        <button className="btn p-3 m-3" onClick={handleExport}>
+          EXPORT
+        </button>
       </div>
     </div>
   );

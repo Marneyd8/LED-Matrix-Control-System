@@ -1,9 +1,7 @@
 import { Rgb } from "../../types/rgb";
-import { useWebSocket } from "../Websocket/WebSocketContext";
 
 function DrawingOptions(props: { rgb: Rgb, setRgb: React.Dispatch<React.SetStateAction<Rgb>> }) {
   const { rgb, setRgb } = props;
-  const ws = useWebSocket();
   const colorPalette = [
     "#FF0000", "#00FF00", "#0000FF", "#FFFF00",
     "#FF00FF", "#00FFFF", "#FFFFFF", "#000000"

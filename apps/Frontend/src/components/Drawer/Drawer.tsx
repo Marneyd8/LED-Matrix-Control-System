@@ -4,7 +4,7 @@ import DrawingPanel from "./DrawingPanel";
 import DrawingOptions from "./DrawingOptions";
 
 function Drawer() {
-  const [rgb, setRgb] = useState<Rgb>({ r: 0, g: 0, b: 255 });
+  const [rgb, setRgb] = useState<Rgb>({ r: 0, g: 0, b: 0 });
 
   return (
     <div className="flex flex-row justify-center p-5">
@@ -12,7 +12,7 @@ function Drawer() {
       <DrawingOptions rgb={rgb} setRgb={setRgb} />
 
       {/* LED Matrix */}
-      <DrawingPanel selectedColor={rgb} />
+      <DrawingPanel selectedColor={rgb} setRgb={setRgb} />
     </div>
   );
 }
