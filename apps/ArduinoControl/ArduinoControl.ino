@@ -3,6 +3,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 #include "config.h"
+#include "font8x8_basic.h"
 
 // WEBSERVER CONTROL VARIABLES
 char ssid[] = WIFI_SSID;

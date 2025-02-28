@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { useWebSocket } from "../Websocket/WebSocketContext";
+import AllowedCharacters from "./AllowedCharacters";
 
 function Typer() {
   const ws = useWebSocket();
   const [text, setText] = useState("");
   const [speed, setSpeed] = useState(10);
   const [loop, setLoop] = useState(false);
+  const allowedCharacters = "A-Za-z0-9 .,!?#-$%&@><="; 
+  const allowedRegex = new RegExp(`^[${allowedCharacters}]*$`); 
+
+  const handleTextChange = (e) => {
+    const input = e.target.value;
+    if (allowedRegex.test(input)) {
+      setText(input);
+    }
+  };
 
   const sendToArduino = () => {
     if (ws && text.trim() !== "") {
@@ -26,9 +36,10 @@ function Typer() {
         type="text"
         placeholder="Enter text..."
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={handleTextChange}
         className="p-2 border border-gray-400 rounded w-64"
       />
+      <AllowedCharacters allowedCharacters={allowedCharacters}/>
 
       <div className="flex flex-col items-center">
         <label className="text-sm font-semibold">Speed of Change (1-100)</label>
