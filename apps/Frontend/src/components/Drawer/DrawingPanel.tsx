@@ -1,7 +1,8 @@
-import { useState, useEffect, SetStateAction } from "react";
+import { useState, useEffect, useRef } from "react";
 import Row from "./Row";
 import { useWebSocket } from "../Websocket/WebSocketContext";
 import { Rgb } from "../../types/rgb";
+import { exportComponentAsPNG } from "react-component-export-image";
 
 function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.SetStateAction<Rgb>> }) {
   const { selectedColor, setRgb } = props;
@@ -11,6 +12,7 @@ function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.
   const [height, setHeight] = useState(0);
   const [fillButtonClicked, setFillButtonClicked] = useState<boolean>(false);
   const [brightness, setBrightness] = useState(25);
+  const panelRef = useRef(null);
 
   useEffect(() => {
     if (ws) {
@@ -57,27 +59,31 @@ function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.
 
   // Handle export action
   const handleExport = () => {
-    // TODO
+    if (panelRef.current){
+      exportComponentAsPNG(panelRef);
+    }
   };
 
   return (
     <div
-      className="flex flex-col align-center p-10"
+      className="p-10"
       onMouseDown={() => setIsDrawing(true)}
       onMouseUp={() => setIsDrawing(false)}
       onMouseLeave={() => setIsDrawing(false)} // Stops drawing when mouse leaves panel
     >
-      {Array.from({ length: height }).map((_, rowIndex) => (
-        <Row
-          key={rowIndex}
-          rowIndex={rowIndex}
-          width={width}
-          selectedColor={selectedColor}
-          isDrawing={isDrawing}
-          fillButtonClicked={fillButtonClicked} // Pass the button click state
-          setFillButtonClicked={setFillButtonClicked} // Pass the setter function
-        />
-      ))}
+      <div ref={panelRef} className="ml-14 w-48">
+        {Array.from({ length: height }).map((_, rowIndex) => (
+          <Row
+            key={rowIndex}
+            rowIndex={rowIndex}
+            width={width}
+            selectedColor={selectedColor}
+            isDrawing={isDrawing}
+            fillButtonClicked={fillButtonClicked} // Pass the button click state
+            setFillButtonClicked={setFillButtonClicked} // Pass the setter function
+          />
+        ))}
+      </div>
       <div className="p-5">
         <button className="btn p-3 m-3" onClick={() => handleAction("FILL", selectedColor)}>
           FILL
@@ -85,7 +91,7 @@ function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.
         <button className="btn p-3 m-3" onClick={() => handleAction("FILL", { r: 0, g: 0, b: 0 })}>
           CLEAR
         </button>
-        <button className="btn p-3 m-3" onClick={handleExport}>
+        <button className="btn p-3 m-3" onClick={() => handleExport()}>
           EXPORT
         </button>
       </div>

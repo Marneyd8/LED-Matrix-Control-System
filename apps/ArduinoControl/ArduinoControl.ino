@@ -119,9 +119,9 @@ void fillLED(int r, int g, int b){
     for (int j = 0; j < MATRIX_WIDTH; j++){
       int index = i * MATRIX_WIDTH + j;
       strip.setPixelColor(index, strip.Color(r, g, b));
-      strip.show();
     }
   }
+  strip.show();
 }
 
 // EFFECT FUNCTIONS

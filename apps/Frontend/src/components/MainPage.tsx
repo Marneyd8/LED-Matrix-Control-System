@@ -1,11 +1,11 @@
 import { useState } from "react";
 import Drawer from "./Drawer/Drawer";
-import GifLoader from "./Loaders/GifLoader";
-import ImageLoader from "./Loaders/ImageLoader";
+import ImageLoader from "./ImageLoader/ImageLoader";
 import Sidebar from "./Sidebar";
 import Typer from "./Typer/Typer";
 import pencil from "../assets/pencil.png";
-import Demo from "./Demo";
+import keyboard from "../assets/keyboard.png";
+import photo from "../assets/photo.png";
 
 const MainPage = () => {
   // State to hold the selected component
@@ -14,7 +14,7 @@ const MainPage = () => {
   const handleFunctionClick = (name: string) => {
     setSelectedFunction(name);
   };
-  // TODO IMAGES
+
   return (
     <div className="flex">
       <div className="w-[20%] bg-second">
@@ -29,19 +29,11 @@ const MainPage = () => {
           </button>
           <button onClick={() => handleFunctionClick("Typer")} className="btn-fucniton">
             <span>Typer</span>
-            <img src="path/to/image2.jpg" alt="Typer"/>
+            <img src={keyboard} alt="Typer"/>
           </button>
           <button onClick={() => handleFunctionClick("ImageLoader")} className="btn-fucniton">
             <span>ImageLoader</span>
-            <img src="path/to/image3.jpg" alt="ImageLoader"/>
-          </button>
-          <button onClick={() => handleFunctionClick("GifLoader")} className="btn-fucniton">
-            <span>GifLoader</span>
-            <img src="path/to/image4.jpg" alt="GifLoader"/>
-          </button>
-          <button onClick={() => handleFunctionClick("Demo")} className="btn-fucniton">
-            <span>Demo</span>
-            <img src="path/to/image5.jpg" alt="Demo"/>
+            <img src={photo} alt="ImageLoader"/>
           </button>
         </div>
   
@@ -49,8 +41,6 @@ const MainPage = () => {
           {selectedFunction === "Drawer" && <Drawer />}
           {selectedFunction === "Typer" && <Typer />}
           {selectedFunction === "ImageLoader" && <ImageLoader />}
-          {selectedFunction === "GifLoader" && <GifLoader />}
-          {selectedFunction === "Demo" && <Demo />}
         </div>
       </div>
     </div>
