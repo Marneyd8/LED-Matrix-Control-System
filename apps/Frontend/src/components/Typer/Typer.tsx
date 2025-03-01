@@ -10,7 +10,7 @@ function Typer() {
   const allowedCharacters = "A-Za-z0-9 .,!?#-$%&@><="; 
   const allowedRegex = new RegExp(`^[${allowedCharacters}]*$`); 
 
-  const handleTextChange = (e) => {
+  const handleTextChange = (e: { target: { value: any; }; }) => {
     const input = e.target.value;
     if (allowedRegex.test(input)) {
       setText(input);

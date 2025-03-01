@@ -3,7 +3,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 #include "config.h"
-#include "font8x8_basic.h"
+#include "font8x8_dict.h"
 
 // WEBSERVER CONTROL VARIABLES
 char ssid[] = WIFI_SSID;
@@ -23,6 +23,7 @@ bool waveActive = false;
 bool randomActive = false;
 bool breathActive = false;
 bool idkActive = false;
+bool textActive = false;
 
 
 // WEBSERVER CONTROL FUNCTIONS
@@ -51,6 +52,12 @@ void parseWebSocketMessage(String msg) {
     int g = json["g"];
     int b = json["b"];
     fillLED(r, g, b);
+  }
+  else if (action == "TEXT"){
+    const char* text = json["text"];
+    int speed = json["speed"];
+    bool loop = json["loop"];
+    generateText(text, speed, loop);
   }
   else if (action == "BRIGHTNESS") {
     int brightness = json["value"];
@@ -98,6 +105,99 @@ void connectToWifi() {
     delay(1000);
     status = WiFi.status();
   }
+}
+
+// TYPER CONTROL
+#define MAX_TEXT_LENGTH 64
+void generateText(const char* text, int speed, bool loop) {
+    int length = strlen(text);
+    uint8_t textmap[8][MAX_TEXT_LENGTH] = {0};
+    
+    for (int i = 0; i < length; i++) {
+        char target = text[i];
+        const uint8_t* bitmap = nullptr;
+        
+        for (int j = 0; j < fontSize; j++) {
+            if (font8x8[j].character == target) {
+                bitmap = font8x8[j].bitmap;
+                break;
+            }
+        }
+        for (int row = 0; row < 8; row++) {
+            textmap[row][i] = bitmap[row];
+        }
+    }
+    
+    Serial.println("Generated Textmap:");
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < length; col++) {
+            Serial.print(textmap[row][col], BIN);
+            Serial.print(" ");
+        }
+        Serial.println();
+    }
+    
+    displayText(textmap, length, speed, loop);
+}
+
+
+void displayText(const uint8_t textmap[8][MAX_TEXT_LENGTH], int length, int speed, bool loop) {
+    int list[8][2] = {{-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}};
+    
+    textActive = false;  // Set text to active
+      for (int i = 0; i < length; i++) {
+          for (int j = 0; j < 8; j++) {
+              int element[2] = {i, j};
+
+              // Shift the list to the left
+              for (int k = 0; k < 7; k++) {
+                  list[k][0] = list[k + 1][0];
+                  list[k][1] = list[k + 1][1];
+              }
+              list[7][0] = element[0];
+              list[7][1] = element[1];
+
+              // Update LEDs
+              for (int k = 0; k < 8; k++) {
+                  int first = list[k][0];
+                  int second = list[k][1];
+                  Serial.print("j: ");
+                  Serial.print(j);
+                  Serial.print(", k: ");
+                  Serial.print(k);
+                  Serial.print(", first: ");
+                  Serial.print(first);
+                  Serial.print(", second: ");
+                  Serial.println(second); // Ends the line
+                  if (first == -1) {
+                      // Turn off LED at (k, j)
+                      //updateLED(k, j, 0, 0, 0);
+                      continue;
+                  }
+                  for (int l = 0; l < 8; l++){
+                    if (((textmap[l][first] >> second) & 1) == 1) {  // Corrected bitwise condition
+                      updateLED(l, k, 255, 255, 255);
+                    } else {
+                      updateLED(l, k, 0, 0, 0);
+                    }
+                  }
+                  
+              }
+          }
+          delay(speed);  // Add delay to control scrolling speed
+      }
+
+      if (!loop) {
+          // Clear display before exiting
+          for (int t = 0; t < 8; t++) {
+              for (int k = 0; k < 7; k++) {
+                  list[k][0] = list[k + 1][0];
+                  list[k][1] = list[k + 1][1];
+              }
+              list[7][0] = -1;
+              list[7][1] = -1;
+          }
+      }
 }
 
 
