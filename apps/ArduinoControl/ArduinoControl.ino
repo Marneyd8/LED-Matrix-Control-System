@@ -38,11 +38,13 @@ void printWifiStatus()
 
 void parseWebSocketMessage(String msg) {
   textActive = false;
-  StaticJsonDocument<200> json;
+  StaticJsonDocument<8192> json; 
   DeserializationError error = deserializeJson(json, msg);
   if (error) {
     Serial.print("JSON Parsing Error: ");
     Serial.println(error.f_str());
+    Serial.print("Received message: ");
+    Serial.println(msg); // Debugging: Print raw message
     return;
   }
 
@@ -64,7 +66,24 @@ void parseWebSocketMessage(String msg) {
     int brightness = json["value"];
     strip.setBrightness(brightness);
     strip.show();
-    Serial.println("Brightness set to: " + String(brightness));
+  }
+  else if (action == "UPDATE_ROW") {
+    JsonArray pixels = json["pixels"];
+    for (JsonObject pixel : pixels) {
+      int row = pixel["row"];
+      int col = pixel["col"];
+      int r = pixel["r"];
+      int g = pixel["g"];
+      int b = pixel["b"];
+
+      if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
+        updateLED(row, col, r, g, b);
+      } else {
+        Serial.println("Invalid RGB values in UPDATE_ALL");
+      }
+    }
+
+    strip.show();
   }
   else {
     int row = json["row"];
@@ -75,6 +94,7 @@ void parseWebSocketMessage(String msg) {
 
     if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
       updateLED(row, col, r, g, b);
+      strip.show();
     } else {
       Serial.println("Invalid RGB values received");
     }
@@ -140,15 +160,6 @@ void generateText(const char* text, int speed, bool loop) {
       }
     }
   }
-  
-  Serial.println("Generated Textmap:");
-  for (int row = 0; row < 8; row++) {
-    for (int col = 0; col < length; col++) {
-        Serial.print(textmap[row][col], BIN);
-        Serial.print(" ");
-    }
-    Serial.println();
-  }
 
   if (loop) {
       textActive = true;
@@ -181,14 +192,6 @@ void displayText(const uint8_t textmap[8][MAX_TEXT_LENGTH], int length, int spee
       for (int k = 0; k < 8; k++) {
         int first = list[k][0];
         int second = list[k][1];
-        Serial.print("j: ");
-        Serial.print(j);
-        Serial.print(", k: ");
-        Serial.print(k);
-        Serial.print(", first: ");
-        Serial.print(first);
-        Serial.print(", second: ");
-        Serial.println(second); // Ends the line
         if (first == -1) {
             // Turn off LED at (k, j)
             //updateLED(k, j, 0, 0, 0);
@@ -219,7 +222,6 @@ void stripSetUp(){
 void updateLED(int row, int col, int r, int g, int b) {
   int index = row * MATRIX_WIDTH + col; // Convert row and col to LED index (1D array)
   strip.setPixelColor(index, strip.Color(r, g, b));
-  strip.show();
 }
 
 void fillLED(int r, int g, int b){
@@ -318,11 +320,15 @@ void loop()
       connected = true;
     }
     int size = wsClient.parseMessage();
-    if (size > 0)
-    {
+    if (size > 0) {
       textActive = false;
-      String message = wsClient.readString();
-      Serial.println("Received: " + message);
+
+      String message = "";
+      while (wsClient.available()) {
+        message += (char)wsClient.read();
+      }
+      // Convert to char array before parsing (alternative method)
+      const char* msg = message.c_str(); 
 
       if (message == "PARAMETERS"){
         sendParameters(message);
@@ -354,5 +360,5 @@ void loop()
   // END OF CONNECTION
   connected = false;
   Serial.println("Disconnected from Websocket");
-  delay(1000);
+  delay(100);
 }
