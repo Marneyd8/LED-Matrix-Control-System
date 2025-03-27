@@ -49,7 +49,6 @@ void parseWebSocketMessage(String msg) {
   }
 
   String action = json["action"];
-  
   if (action == "FILL") {
     int r = json["r"];
     int g = json["g"];
@@ -203,6 +202,7 @@ void displayText(const uint8_t textmap[8][MAX_TEXT_LENGTH], int length, int spee
           } else {
             updateLED(l, k, 0, 0, 0);
           }
+          strip.show();
         }
       }
     }
