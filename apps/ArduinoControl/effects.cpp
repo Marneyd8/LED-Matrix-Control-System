@@ -1,15 +1,25 @@
 #include "effects.h"
 #include "led_control.h"
 #include "config.h"
+#include <math.h>
 
 #define PI 3.14159265
 
 void spiralEffect() {
   static uint8_t hue = 0;
+  float centerX = MATRIX_WIDTH / 2.0;
+  float centerY = MATRIX_WIDTH / 2.0;
+  float swirlFactor = 0.15; // controls tightness of the swirl
+
   for (int y = 0; y < MATRIX_WIDTH; y++) {
     for (int x = 0; x < MATRIX_WIDTH; x++) {
+      float dx = x - centerX;
+      float dy = y - centerY;
+      float distance = sqrt(dx * dx + dy * dy);
+      float angle = atan2(dy, dx);
+
       int index = y * MATRIX_WIDTH + x;
-      uint8_t pixelHue = hue + (x * 10) + (y * 10);
+      uint8_t pixelHue = hue + (uint8_t)(distance * 15) + (uint8_t)(angle * swirlFactor * 180 / PI);
       strip.setPixelColor(index, strip.ColorHSV(pixelHue * 256, 255, 255));
     }
   }
@@ -20,14 +30,15 @@ void spiralEffect() {
 
 void waveEffect() {
   static float phase = 0;
-  phase += 0.3;
-  for (int x = 0; x < MATRIX_WIDTH; x++) {
-    float sineValue = sin(x * 0.5 + phase);
-    int y = (MATRIX_WIDTH / 2) + (sineValue * (MATRIX_WIDTH / 2));
+  phase += 0.15;
 
-    for (int row = 0; row < MATRIX_WIDTH; row++) {
-      int index = row * MATRIX_WIDTH + x;
-      if (row == y || row == y + 1) {
+  for (int y = 0; y < MATRIX_WIDTH; y++) {
+    for (int x = 0; x < MATRIX_WIDTH; x++) {
+      float sineValue = sin((float)x / 8.0 + phase); // longer wavelength
+      int waveY = round((MATRIX_WIDTH / 2.0) + (sineValue * (MATRIX_WIDTH / 2.2))); // Round to the nearest integer
+
+      int index = y * MATRIX_WIDTH + x;
+      if (y == waveY) { // Only light the row exactly at waveY
         uint8_t hue = ((int)(phase * 10) + x * 8) % 255;
         strip.setPixelColor(index, strip.ColorHSV(hue * 256, 255, 255));
       } else {
@@ -35,6 +46,7 @@ void waveEffect() {
       }
     }
   }
+
   strip.show();
   delay(60);
 }
@@ -73,7 +85,7 @@ void waterEffect() {
     centerY = random(MATRIX_WIDTH);
   }
 
-  fillLED(0, 0, 255); // Fill with blue base
+  fillLED(40, 40, 255); // lighter blue
 
   for (int y = 0; y < MATRIX_WIDTH; y++) {
     for (int x = 0; x < MATRIX_WIDTH; x++) {
@@ -92,37 +104,38 @@ void waterEffect() {
   if (frame >= maxRadius) {
     frame = 0;
   }
-  delay(200);
+  delay(180);
 }
 
-  void fireEffect() {
-    static int frame = 0;
-    frame++;
-  
-    for (int y = 0; y < MATRIX_WIDTH; y++) {
-      for (int x = 0; x < MATRIX_WIDTH; x++) {
-        int index = y * MATRIX_WIDTH + x;
-        int flicker = random(100, 255 - y * 10); // fade upward
-        int r = 255;
-        int g = min(flicker, 180);
-        int b = random(5); // slight blue tint occasionally
-  
-        if (random(100) < 5 && y > 1) {
-          // Spark effect
-          r = 255;
-          g = 255;
-          b = 100;
-        }
-  
-        strip.setPixelColor(index, strip.Color(r, g, b));
+void fireEffect() {
+  static int frame = 0;
+  frame++;
+
+  for (int y = 0; y < MATRIX_WIDTH; y++) {
+    for (int x = 0; x < MATRIX_WIDTH; x++) {
+      int index = y * MATRIX_WIDTH + x;
+      int flicker = random(100, 255 - y * 10); // fade upward
+      int r = 255;
+      int g = min(flicker, 180);
+      int b = random(5); // slight blue tint occasionally
+
+      if (random(100) < 5 && y > 1) {
+        // Spark effect
+        r = 255;
+        g = 255;
+        b = 100;
       }
+
+      strip.setPixelColor(index, strip.Color(r, g, b));
     }
-  
-    // Flame flicker movement effect
-    if (frame % 5 == 0) {
-      strip.setBrightness(random(40, 80));
-    }
-  
-    strip.show();
-    delay(40);
   }
+
+  // Flame flicker movement effect
+  if (frame % 5 == 0) {
+    strip.setBrightness(random(40, 80));
+  }
+
+  strip.show();
+  delay(40);
+}
+
