@@ -4,11 +4,11 @@ import { useWebSocket } from "./Websocket/WebSocketContext";
 function Sidebar() {
   const ws = useWebSocket();
   const [activeEffects, setActiveEffects] = useState<Record<string, boolean>>({
-    FADE: false,
+    SPIRAL: false,
     WAVE: false,
     RANDOM: false,
-    BREATH: false,
-    IDK: false,
+    FIRE: false,
+    WATER: false,
   });
 
   const toggleEffect = (effect: string) => {
