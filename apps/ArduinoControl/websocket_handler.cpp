@@ -11,11 +11,11 @@ WiFiWebSocketClient wsClient(client, SERVER_ADDRESS, 80);
 char serverAddress[] = SERVER_ADDRESS;
 int port = 80;
 bool connected = false;
-bool fadeActive = false;
+bool spiralActive = false;
 bool waveActive = false;
 bool randomActive = false;
-bool breathActive = false;
-bool idkActive = false;
+bool fireActive = false;
+bool waterActive = false;
 bool textActive = false;
 
 char ssid[] = WIFI_SSID;
@@ -47,29 +47,41 @@ void start(){
 
       if (message == "PARAMETERS"){
         sendParameters(message);
-      }else if (message == "FADE") {
-        fadeActive = !fadeActive;
+      }else if (message == "SPIRAL") {
+        spiralActive = !spiralActive;
+        if (spiralActive == false){
+          fillLED(0, 0, 0);
+        }
       }else if (message == "WAVE") {
         waveActive = !waveActive;
+        if (waveActive == false){
+          fillLED(0, 0, 0);
+        }
       }else if (message == "RANDOM") {
         randomActive = !randomActive;
         if (randomActive == false){
           fillLED(0, 0, 0);
         }
-      }else if (message == "BREATH") {
-        breathActive = !breathActive;
-      }else if (message == "IDK") {
-        idkActive = !idkActive;
+      }else if (message == "FIRE") {
+        fireActive = !fireActive;
+        if (fireActive == false){
+          fillLED(0, 0, 0);
+        }
+      }else if (message == "WATER") {
+        waterActive = !waterActive;
+        if (waterActive == false){
+          fillLED(0, 0, 0);
+        }
       }else{
         parseWebSocketMessage(message);
       }
     }
 
-    if (fadeActive) fadeEffect();
+    if (spiralActive) spiralEffect();
     if (waveActive) waveEffect();
     if (randomActive) randomEffect();
-    if (breathActive) breathEffect();
-    if (idkActive) idkEffect();
+    if (fireActive) fireEffect();
+    if (waterActive) waterEffect();
     if (textActive) displayText(globalTextmap, globalLength, globalSpeed);
   }
   // END OF CONNECTION

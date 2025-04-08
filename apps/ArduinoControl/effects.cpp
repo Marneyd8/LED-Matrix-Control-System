@@ -2,7 +2,7 @@
 #include "led_control.h"
 #include "config.h"
 
-void fadeEffect() {
+void spiralEffect() {
   for (int brightness = 0; brightness <= 255; brightness += 5) {
     strip.setBrightness(brightness);
     strip.show();
@@ -38,7 +38,7 @@ void randomEffect() {
   delay(500);
 }
 
-void breathEffect() {
+void waterEffect() {
   for (int brightness = 0; brightness <= 255; brightness += 5) {
     strip.setBrightness(brightness);
     strip.show();
@@ -51,7 +51,7 @@ void breathEffect() {
   }
 }
 
-void idkEffect() {
+void fireEffect() {
   for (int i = 0; i < MATRIX_WIDTH * MATRIX_WIDTH; i++) {
     strip.setPixelColor(i, strip.Color(255, 0, 255));
   }

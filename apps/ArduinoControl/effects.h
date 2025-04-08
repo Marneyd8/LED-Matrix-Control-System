@@ -1,10 +1,10 @@
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-void fadeEffect();
+void spiralEffect();
 void waveEffect();
 void randomEffect();
-void breathEffect();
-void idkEffect();
+void fireEffect();
+void waterEffect();
 
 #endif
