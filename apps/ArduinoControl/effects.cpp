@@ -40,11 +40,23 @@ void waveEffect() {
 }
 
 void randomEffect() {
-  for (int i = 0; i < MATRIX_WIDTH * MATRIX_WIDTH; i++) {
-    int r = random(256);
-    int g = random(256);
-    int b = random(256);
-    strip.setPixelColor(i, strip.Color(r, g, b));
+  for (int y = 0; y < MATRIX_WIDTH; y += 2) {
+    for (int x = 0; x < MATRIX_WIDTH; x += 2) {
+      int r = random(256);
+      int g = random(256);
+      int b = random(256);
+
+      for (int dy = 0; dy < 2; dy++) {
+        for (int dx = 0; dx < 2; dx++) {
+          int px = x + dx;
+          int py = y + dy;
+          if (px < MATRIX_WIDTH && py < MATRIX_WIDTH) {
+            int index = py * MATRIX_WIDTH + px;
+            strip.setPixelColor(index, strip.Color(r, g, b));
+          }
+        }
+      }
+    }
   }
   strip.show();
   delay(500);
@@ -80,14 +92,37 @@ void waterEffect() {
   if (frame >= maxRadius) {
     frame = 0;
   }
-  delay(120);
+  delay(200);
 }
 
-void fireEffect() {
-  for (int i = 0; i < (MATRIX_WIDTH * MATRIX_LENGTH); i++) {
-    int flicker = random(128);
-    strip.setPixelColor(i, strip.Color(255, flicker, 0));
+  void fireEffect() {
+    static int frame = 0;
+    frame++;
+  
+    for (int y = 0; y < MATRIX_WIDTH; y++) {
+      for (int x = 0; x < MATRIX_WIDTH; x++) {
+        int index = y * MATRIX_WIDTH + x;
+        int flicker = random(100, 255 - y * 10); // fade upward
+        int r = 255;
+        int g = min(flicker, 180);
+        int b = random(5); // slight blue tint occasionally
+  
+        if (random(100) < 5 && y > 1) {
+          // Spark effect
+          r = 255;
+          g = 255;
+          b = 100;
+        }
+  
+        strip.setPixelColor(index, strip.Color(r, g, b));
+      }
+    }
+  
+    // Flame flicker movement effect
+    if (frame % 5 == 0) {
+      strip.setBrightness(random(40, 80));
+    }
+  
+    strip.show();
+    delay(40);
   }
-  strip.show();
-  delay(50);
-}
