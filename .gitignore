@@ -11,9 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
-apps/Frontend/.env
 apps/ArduinoControl/config.h
 apps/Server/server.js
+apps/Server/getWiFiIp.js
 
 # Editor directories and files
 .vscode/*

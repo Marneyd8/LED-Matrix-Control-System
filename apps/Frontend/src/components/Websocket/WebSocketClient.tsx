@@ -11,12 +11,11 @@ type WebSocketClientProps = {
  * @returns {ReactNode} A React element that renders the WebSocket connection status.
  */
 function WebSocketClient({ setWs }: WebSocketClientProps) {
-  const serverIP: string = import.meta.env.VITE_SERVERADDRESS;
   const [connected, setConnected] = useState<boolean>(false);
   const isMounted = useRef<boolean>(false);
 
   const connectWebSocket = () => {
-    const websocket = new WebSocket(`ws://${serverIP}:80`);
+    const websocket = new WebSocket('ws://localhost:80');
     websocket.onopen = () => {
       websocket.send('WEBSITE CONNECTED');
     };

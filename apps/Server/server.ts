@@ -1,21 +1,17 @@
-import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
+import { getWiFiIpAddress } from './getWiFiIp';
 
-dotenv.config({ path: path.resolve(__dirname, '../Frontend/.env') });
-
-// Create HTTP server
-const server = createServer();
-const host: string = process.env.VITE_SERVERADDRESS || '0.0.0.0';
-const port: number = 80;
-
-server.listen(port, host, () => {
-  console.log(`Server is listening on ${host}:${port}`);
-});
+// Call the function to get the WiFi IP address
+getWiFiIpAddress()
+  .then(ip => {
+    console.log(`Your Wi-Fi IP address is: ${ip}`);
+  })
+  .catch(error => {
+    console.error(error);
+  });
 
 // Create WebSocket server
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ port: 80 });
 
 let arduinoWs: WebSocket | null = null;
 let websiteWs: WebSocket | null = null;
@@ -33,7 +29,7 @@ wss.on('connection', (ws: WebSocket) => {
       websiteWs = ws;
       console.log('Website connection established');
       ws.send("SUCESS");
-    }else{
+    } else {
       // Forward messages between Arduino and Website
       if (ws === websiteWs && arduinoWs) {
         arduinoWs.send(msg);
@@ -55,4 +51,4 @@ wss.on('connection', (ws: WebSocket) => {
   });
 });
 
-console.log(`WebSocket server is running on ws://${host}:${port}`);
+console.log('WebSocket server is running');
