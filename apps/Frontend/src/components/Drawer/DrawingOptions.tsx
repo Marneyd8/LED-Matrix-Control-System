@@ -1,4 +1,8 @@
 import { Rgb } from "../../types/rgb";
+import ColorPalette from "./ColorPalette";
+import ColorPreview from "./ColorPreview";
+import HexInput from "./HexInput";
+import RgbSliders from "./RgbSliders";
 
 function DrawingOptions(props: { rgb: Rgb, setRgb: React.Dispatch<React.SetStateAction<Rgb>> }) {
   const { rgb, setRgb } = props;
@@ -35,30 +39,10 @@ function DrawingOptions(props: { rgb: Rgb, setRgb: React.Dispatch<React.SetState
 
   return (
     <div className="flex flex-col items-center mr-4 p-12">
-      {/* Current Color Preview */}
-      <div className="w-16 h-16 mb-4 border" style={{ backgroundColor: rgbToHex(rgb.r, rgb.g, rgb.b) }}></div>
-
-      {/* RGB Sliders */}
-      {["r", "g", "b"].map((color) => (
-        <label key={color}>
-          {color.toUpperCase()}:
-          <input type="range" name={color} min="0" max="255" value={rgb[color]} onChange={handleRgbChange} />
-          {rgb[color]}
-        </label>
-      ))}
-
-      {/* Color Palette */}
-      <div className="flex flex-wrap mt-4">
-        {colorPalette.map((color) => (
-          <div key={color} className="w-6 h-6 m-1 border cursor-pointer"
-            style={{ backgroundColor: color }}
-            onClick={() => handlePaletteClick(color)}>
-          </div>
-        ))}
-      </div>
-
-      {/* Hex Input */}
-      <input type="text" value={rgbToHex(rgb.r, rgb.g, rgb.b)} onChange={handleHexChange} className="mt-2 p-1 border" maxLength={7} />
+      <ColorPreview hexColor={rgbToHex(rgb.r, rgb.g, rgb.b)} />
+      <RgbSliders rgb={rgb} onChange={handleRgbChange} />
+      <ColorPalette colors={colorPalette} onSelect={handlePaletteClick} />
+      <HexInput hexValue={rgbToHex(rgb.r, rgb.g, rgb.b)} onChange={handleHexChange} />
     </div>
   );
 }

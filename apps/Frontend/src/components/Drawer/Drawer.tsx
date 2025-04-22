@@ -8,10 +8,7 @@ function Drawer() {
 
   return (
     <div className="flex flex-row justify-center p-5">
-      {/* Drawer Options */}
       <DrawingOptions rgb={rgb} setRgb={setRgb} />
-
-      {/* LED Matrix */}
       <DrawingPanel selectedColor={rgb} setRgb={setRgb} />
     </div>
   );
