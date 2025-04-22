@@ -72,7 +72,7 @@ function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.
       onMouseUp={() => setIsDrawing(false)}
       onMouseLeave={() => setIsDrawing(false)} // Stops drawing when mouse leaves panel
     >
-    <div ref={panelRef} className="ml-14 w-48">
+    <div ref={panelRef} className="ml-14 w-${height}">
         {Array.from({ length: height }).map((_, rowIndex) => (
           <Row
             key={rowIndex}

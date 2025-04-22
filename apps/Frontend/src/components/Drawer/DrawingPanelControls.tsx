@@ -14,7 +14,7 @@ const DrawingPanelControls = (props: {selectedColor: Rgb, handleAction: (action:
         EXPORT
       </button>
 
-      <div className="flex items-center ml-4">
+      <div className="flex items-center ml-20">
         <label className="mr-2">BRIGHTNESS</label>
         <input
           type="number"
