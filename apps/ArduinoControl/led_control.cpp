@@ -10,7 +10,12 @@ void stripSetUp(){
 }
 
 void updateLED(int row, int col, int r, int g, int b) {
-  int index = row * MATRIX_WIDTH + col; // Convert row and col to LED index (1D array)
+  int index;
+  if (row % 2 != 0) {  // Even rows (left to right)
+    index = row * MATRIX_WIDTH + col;
+  } else {  // Odd rows (right to left)
+    index = (row + 1) * MATRIX_WIDTH - col - 1;
+  }
   strip.setPixelColor(index, strip.Color(r, g, b));
 }
 

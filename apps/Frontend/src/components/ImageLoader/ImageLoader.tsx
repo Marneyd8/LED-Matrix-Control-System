@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 import { useWebSocket } from "../Websocket/WebSocketContext";
+import ImageUploader from "./ImageUploader";
+import PixelGrid from "./PixelGrid";
+import { Pixel } from "../../types/pixel";
 
 function ImageLoader() {
-  const [image, setImage] = useState(null);
-  const [pixels, setPixels] = useState([]);
   const ws = useWebSocket();
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
+  const [image, setImage] = useState<string>("");
+  const [pixels, setPixels] = useState<Pixel[]>([]);
+  const [width, setWidth] = useState<number>(0);
+  const [height, setHeight] = useState<number>(0);
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setImage(imageUrl);
@@ -35,19 +38,23 @@ function ImageLoader() {
 
   useEffect(() => {
     if (image) {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.imageSmoothingEnabled = true; // Default bilinear interpolation
+
       const img = new Image();
       img.src = image;
-      img.crossOrigin = "Anonymous";
+      img.crossOrigin = "anonymous";
+      
+      img.onerror = (err) => {
+        console.error("Image failed to load:", img.src, err);
+      };
 
       img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-
-        canvas.width = width;
-        canvas.height = height;
-
-        ctx.imageSmoothingEnabled = true; // Default bilinear interpolation
-
         ctx.drawImage(img, 0, 0, width, height);
 
         const imageData = ctx.getImageData(0, 0, width, height).data;
@@ -68,53 +75,34 @@ function ImageLoader() {
     }
   }, [image, width, height]);
 
-  useEffect(() => {
-    if (ws && pixels.length > 0) {
-      const sendRows = async () => {
-        for (let row = 0; row < height; row++) {
-          const rowPixels = pixels.filter(pixel => pixel.row === row);
-          
-          const payload = {
-            action: "UPDATE_ROW",
-            pixels: rowPixels,
-          };
+  const sendRows = async () => {
+    if (!ws || pixels.length === 0) return;
   
-          console.log("Sending JSON:", JSON.stringify(payload)); // Debugging
-          ws.send(JSON.stringify(payload));
+    // Group pixels by row
+    const rows = Array.from({ length: height }, (_, rowIndex) =>
+      pixels.filter(pixel => pixel.row === rowIndex)
+    );
   
-          // Delay before sending the next row (500ms in this example)
-          await new Promise(resolve => setTimeout(resolve, 50));
-        }
+    for (const rowPixels of rows) {
+      const payload = {
+        action: "UPDATE_ROW",
+        pixels: rowPixels,
       };
-  
-      sendRows(); // Call the async function
+      
+      ws.send(JSON.stringify(payload));
+      await new Promise(resolve => setTimeout(resolve, 50)); // Delay
     }
+  };
+  
+  useEffect(() => {
+      sendRows();
   }, [pixels, ws, height]);
   
 
   return (
     <div>
-      <input type="file" accept="image/*" onChange={handleImageChange} />
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${width}, 10px)`,
-          gap: "1px",
-          marginTop: "10px",
-        }}
-      >
-        {pixels.map((pixel, index) => (
-          <div
-            key={index}
-            style={{
-              width: "10px",
-              height: "10px",
-              backgroundColor: `rgb(${pixel.r}, ${pixel.g}, ${pixel.b})`,
-            }}
-          />
-        ))}
-      </div>
+      <ImageUploader onChange={handleImageChange} />
+      <PixelGrid pixels={pixels} width={width} />
     </div>
   );
 }
