@@ -3,6 +3,7 @@ import Row from "./Row";
 import { useWebSocket } from "../Websocket/WebSocketContext";
 import { Rgb } from "../../types/rgb";
 import { exportComponentAsPNG } from "react-component-export-image";
+import DrawingPanelControls from "./DrawingPanelControls";
 
 function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.SetStateAction<Rgb>> }) {
   const { selectedColor, setRgb } = props;
@@ -71,7 +72,7 @@ function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.
       onMouseUp={() => setIsDrawing(false)}
       onMouseLeave={() => setIsDrawing(false)} // Stops drawing when mouse leaves panel
     >
-      <div ref={panelRef} className="ml-14 w-48">
+    <div ref={panelRef} className="ml-14 w-48">
         {Array.from({ length: height }).map((_, rowIndex) => (
           <Row
             key={rowIndex}
@@ -79,34 +80,17 @@ function DrawingPanel(props: { selectedColor: Rgb, setRgb: React.Dispatch<React.
             width={width}
             selectedColor={selectedColor}
             isDrawing={isDrawing}
-            fillButtonClicked={fillButtonClicked} // Pass the button click state
-            setFillButtonClicked={setFillButtonClicked} // Pass the setter function
+            fillButtonClicked={fillButtonClicked}
+            setFillButtonClicked={setFillButtonClicked}
           />
         ))}
       </div>
-      <div className="p-5">
-        <button className="btn p-3 m-3" onClick={() => handleAction("FILL", selectedColor)}>
-          FILL
-        </button>
-        <button className="btn p-3 m-3" onClick={() => handleAction("FILL", { r: 0, g: 0, b: 0 })}>
-          CLEAR
-        </button>
-        <button className="btn p-3 m-3" onClick={() => handleExport()}>
-          EXPORT
-        </button>
-      </div>
-      <label>
-        BRIGHTNESS
-        <input 
-          type="range" 
-          name="brightness" 
-          min="0" 
-          max="255" 
-          value={brightness} 
-          onChange={(e) => handleAction("BRIGHTNESS", Number(e.target.value))} // Pass the updated value
-        />
-        <span>{brightness}</span> {/* Display the current brightness value */}
-      </label>
+      <DrawingPanelControls
+        selectedColor={selectedColor}
+        handleAction={handleAction}
+        brightness={brightness}
+        handleExport={handleExport}
+      />
     </div>
   );
 }
