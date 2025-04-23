@@ -3,11 +3,10 @@
 #include "effects.h"
 #include "text_display.h"
 #include "websocket_handler.h"
-// CONTROL VARIABLES
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(115200);  
   connectToWifi();
   printWifiStatus();
   stripSetUp();
