@@ -127,7 +127,7 @@ void sendParameters(String msg) {
 void sendRgbValues(int row, int col, int r, int g, int b) {
   StaticJsonDocument<256> doc;
   JsonObject pixel = doc.to<JsonObject>();
-
+  pixel["action"] = "UPDATE_BACK";
   pixel["row"] = row;
   pixel["col"] = col;
   pixel["r"] = r;
@@ -139,6 +139,19 @@ void sendRgbValues(int row, int col, int r, int g, int b) {
 
   wsClient.beginMessage(TYPE_TEXT);
   wsClient.print(jsonString);
+  wsClient.endMessage();
+}
+
+void sendFillValues(int r, int g, int b){
+  StaticJsonDocument<200> response;
+  response["action"] = "FILL_BACK";
+  response["r"] = r;
+  response["g"] = g;
+  response["b"] = b;
+  String responseStr;
+  serializeJson(response, responseStr);
+  wsClient.beginMessage(TYPE_TEXT);
+  wsClient.print(responseStr);
   wsClient.endMessage();
 }
 
@@ -160,6 +173,7 @@ void parseWebSocketMessage(String msg) {
     int g = json["g"];
     int b = json["b"];
     fillLED(r, g, b);
+    sendFillValues(r, g, b);
   }
   else if (action == "TEXT"){
     const char* text = json["text"];

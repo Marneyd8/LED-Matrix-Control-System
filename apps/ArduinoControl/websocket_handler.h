@@ -7,6 +7,7 @@
 void parseWebSocketMessage(String msg);
 void sendParameters(String msg);
 void sendRgbValues(int row, int col, int r, int g, int b);
+void sendFillValues(int r, int g, int b);
 void connectToWifi();
 void printWifiStatus();
 void start();
