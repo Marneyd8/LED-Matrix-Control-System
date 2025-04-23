@@ -18,69 +18,64 @@ function DrawingPanel(props: { selectedColor: Rgb; setRgb: React.Dispatch<React.
   const panelRef = useRef(null);
 
   useEffect(() => {
-    if (ws) {
-      ws.send("PARAMETERS");
-      ws.onmessage = (message) => {
-        try {
-          const data = JSON.parse(message.data);
-          if (data.width && data.height) {
-            setWidth(data.width);
-            setHeight(data.height);
-          }
-        } catch (error) {
-          console.error("Error parsing WebSocket message:", error);
-        }
-      };
-    }
-  }, [ws]);
-  // Initialize websocket and handle incoming messages
-  useEffect(() => {
     if (!ws) return;
   
-    const handleOpen = () => {
-      ws.send("PARAMETERS");
+    const initializePixels = (width: number, height: number) => {
+      setWidth(width);
+      setHeight(height);
+      setPixelColors(
+        Array.from({ length: height }, () =>
+          Array.from({ length: width }, () => ({ r: 0, g: 0, b: 0 }))
+        )
+      );
+    };
+  
+    const handleFillBack = ({ r, g, b }: Rgb) => {
+      setPixelColors(prev => prev.map(row => row.map(() => ({ r, g, b }))));
+    };
+  
+    const handleUpdateBack = (row: number, col: number, color: Rgb) => {
+      setPixelColors(prev => {
+        const updated = [...prev];
+        updated[row] = [...updated[row]];
+        updated[row][col] = color;
+        return updated;
+      });
     };
   
     const handleMessage = (message: MessageEvent) => {
       try {
         const data = JSON.parse(message.data);
+  
         if (data.width && data.height) {
-          setWidth(data.width);
-          setHeight(data.height);
-          setPixelColors(Array.from({ length: data.height }, () =>
-            Array.from({ length: data.width }, () => ({ r: 0, g: 0, b: 0 }))
-          ));
+          initializePixels(data.width, data.height);
         }
   
         if (data.action === "FILL_BACK") {
-          const { r, g, b } = data;
-          setPixelColors(prev =>
-            prev.map(row => row.map(() => ({ r, g, b })))
-          );
+          handleFillBack(data);
         }
   
         if (data.action === "UPDATE_BACK") {
           const { row, col, r, g, b } = data;
-          setPixelColors(prev => {
-            const updated = [...prev];
-            updated[row] = [...updated[row]];
-            updated[row][col] = { r, g, b };
-            return updated;
-          });
+          handleUpdateBack(row, col, { r, g, b });
         }
       } catch (err) {
         console.error("WebSocket message error:", err);
       }
     };
   
-    ws.addEventListener("open", handleOpen);
-    ws.addEventListener("message", handleMessage);
+    const handleOpen = () => {
+      ws.send("PARAMETERS");
+    };
   
+    ws.addEventListener("message", handleMessage);
+    handleOpen();
     return () => {
-      ws.removeEventListener("open", handleOpen);
       ws.removeEventListener("message", handleMessage);
     };
   }, [ws]);
+  
+  
   
 
   const handleAction = (action: string, value: any) => {
