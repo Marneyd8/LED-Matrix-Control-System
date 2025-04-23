@@ -90,7 +90,7 @@ function ImageLoader() {
       };
       
       ws.send(JSON.stringify(payload));
-      await new Promise(resolve => setTimeout(resolve, 50)); // Delay
+      await new Promise(resolve => setTimeout(resolve, width * height /4 )); // Delay
     }
   };
   

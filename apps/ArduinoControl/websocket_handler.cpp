@@ -197,7 +197,6 @@ void parseWebSocketMessage(String msg) {
 
       if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
         updateLED(row, col, r, g, b);
-        sendRgbValues(row, col, r, g, b);
       } else {
         Serial.println("Invalid RGB values in UPDATE_ROW");
       }
