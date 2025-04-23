@@ -124,6 +124,24 @@ void sendParameters(String msg) {
   wsClient.endMessage();
 }
 
+void sendRgbValues(int row, int col, int r, int g, int b) {
+  StaticJsonDocument<256> doc;
+  JsonObject pixel = doc.to<JsonObject>();
+
+  pixel["row"] = row;
+  pixel["col"] = col;
+  pixel["r"] = r;
+  pixel["g"] = g;
+  pixel["b"] = b;
+
+  String jsonString;
+  serializeJson(doc, jsonString);
+
+  wsClient.beginMessage(TYPE_TEXT);
+  wsClient.print(jsonString);
+  wsClient.endMessage();
+}
+
 void parseWebSocketMessage(String msg) {
   textActive = false;
   StaticJsonDocument<8192> json; 
@@ -165,6 +183,7 @@ void parseWebSocketMessage(String msg) {
 
       if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
         updateLED(row, col, r, g, b);
+        sendRgbValues(row, col, r, g, b);
       } else {
         Serial.println("Invalid RGB values in UPDATE_ROW");
       }
@@ -181,6 +200,7 @@ void parseWebSocketMessage(String msg) {
 
     if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
       updateLED(row, col, r, g, b);
+      sendRgbValues(row, col, r, g, b);
       strip.show();
     } else {
       Serial.println("Invalid RGB values received");
