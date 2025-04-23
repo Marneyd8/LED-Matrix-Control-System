@@ -1,16 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import Header from "./Header";
+import ConnectionStatus from "./ConnectionStatus";
 
-type WebSocketClientProps = {
-  setWs: React.Dispatch<React.SetStateAction<WebSocket | null>>;
-};
-
-/**
- * WebSocketClient component manages the WebSocket connection.
- *
- * @param setWs The setter function to update the WebSocket state.
- * @returns {ReactNode} A React element that renders the WebSocket connection status.
- */
-function WebSocketClient({ setWs }: WebSocketClientProps) {
+function WebSocketClient(props: {setWs: React.Dispatch<React.SetStateAction<WebSocket | null>>}) {
+  const {setWs} = props;
   const [connected, setConnected] = useState<boolean>(false);
   const isMounted = useRef<boolean>(false);
 
@@ -22,7 +15,7 @@ function WebSocketClient({ setWs }: WebSocketClientProps) {
 
     websocket.onmessage = (message) => {
       const msg = message.data;
-      if (msg == "SUCESS") {
+      if (msg === "SUCESS") {
         console.log('Connected to WebSocket server');
         setConnected(true);
         setWs(websocket);
@@ -49,19 +42,9 @@ function WebSocketClient({ setWs }: WebSocketClientProps) {
 
   return (
     <div className="bg-main">
-      <div className="text-4xl text-white p-2 pt-8">
-        <div>Control System for LED Matrix Display</div>
-      </div>
-
-      <div className="p-4">
-        {!connected ? (
-          <div>
-            <h2>Server: Unable to connect</h2>
-            <button onClick={connectWebSocket}>Try again</button>
-          </div>) :
-          (<h2>Server: Connected</h2>)}
-      </div>
-    </div>
+    <Header />
+    <ConnectionStatus connected={connected} onRetry={connectWebSocket} />
+  </div>
   );
 }
 
