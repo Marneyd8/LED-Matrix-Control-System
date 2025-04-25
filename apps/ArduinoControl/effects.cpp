@@ -3,13 +3,12 @@
 #include "config.h"
 #include <math.h>
 
-#define PI 3.14159265
-
 void spiralEffect() {
+  strip.clear();
   static uint8_t hue = 0;
   float centerX = MATRIX_WIDTH / 2.0;
   float centerY = MATRIX_WIDTH / 2.0;
-  float swirlFactor = 0.15; // controls tightness of the swirl
+  float swirlFactor = 0.15;
 
   for (int y = 0; y < MATRIX_WIDTH; y++) {
     for (int x = 0; x < MATRIX_WIDTH; x++) {
@@ -18,9 +17,14 @@ void spiralEffect() {
       float distance = sqrt(dx * dx + dy * dy);
       float angle = atan2(dy, dx);
 
-      int index = y * MATRIX_WIDTH + x;
-      uint8_t pixelHue = hue + (uint8_t)(distance * 15) + (uint8_t)(angle * swirlFactor * 180 / PI);
-      strip.setPixelColor(index, strip.ColorHSV(pixelHue * 256, 255, 255));
+      uint8_t pixelHue = hue + (uint8_t)(distance * 15) + (uint8_t)(angle * swirlFactor * 180 / 3.14159265);
+
+      uint32_t rgbColor = strip.ColorHSV(pixelHue * 256, 255, 255);
+      uint8_t r = (rgbColor >> 16) & 0xFF;
+      uint8_t g = (rgbColor >> 8) & 0xFF;
+      uint8_t b = rgbColor & 0xFF;
+
+      updateLED(x, y, r, g, b);
     }
   }
   strip.show();
@@ -28,30 +32,34 @@ void spiralEffect() {
   delay(50);
 }
 
+float phase = 0.0;
 void waveEffect() {
-  static float phase = 0;
-  phase += 0.15;
+  strip.clear();
+  float frequency = 0.2;
+  for (int x = 0; x < MATRIX_WIDTH; x++) {
+    float amplitude = (float)MATRIX_WIDTH / 2.0 - 1;
+    float waveY = amplitude * sin(frequency * x + phase) + (float)MATRIX_WIDTH / 2.0;
+    int waveTop = round(waveY);
+    if (waveTop >= 0 && waveTop < MATRIX_WIDTH) {
+      for (int y = 0; y <= waveTop; y++) {
+        float brightness = map(y, 0, waveTop, 50, 255);
+        brightness = constrain(brightness, 0, 255);
+        int red = brightness;
+        int green = 0;
+        int blue = 255 - brightness;
 
-  for (int y = 0; y < MATRIX_WIDTH; y++) {
-    for (int x = 0; x < MATRIX_WIDTH; x++) {
-      float sineValue = sin((float)x / 8.0 + phase); // longer wavelength
-      int waveY = round((MATRIX_WIDTH / 2.0) + (sineValue * (MATRIX_WIDTH / 2.2))); // Round to the nearest integer
-
-      int index = y * MATRIX_WIDTH + x;
-      if (y == waveY) { // Only light the row exactly at waveY
-        uint8_t hue = ((int)(phase * 10) + x * 8) % 255;
-        strip.setPixelColor(index, strip.ColorHSV(hue * 256, 255, 255));
-      } else {
-        strip.setPixelColor(index, strip.Color(0, 0, 0));
+        updateLED(x, y, red, green, blue);
       }
     }
   }
 
+  phase += 0.05;
   strip.show();
-  delay(60);
 }
 
+
 void randomEffect() {
+  strip.clear();
   for (int y = 0; y < MATRIX_WIDTH; y += 2) {
     for (int x = 0; x < MATRIX_WIDTH; x += 2) {
       int r = random(256);
@@ -63,18 +71,19 @@ void randomEffect() {
           int px = x + dx;
           int py = y + dy;
           if (px < MATRIX_WIDTH && py < MATRIX_WIDTH) {
-            int index = py * MATRIX_WIDTH + px;
-            strip.setPixelColor(index, strip.Color(r, g, b));
+            updateLED(px, py, r, g, b);
           }
         }
       }
     }
   }
+
   strip.show();
   delay(500);
 }
 
 void waterEffect() {
+  strip.clear();
   static int frame = 0;
   static int centerX = random(MATRIX_WIDTH);
   static int centerY = random(MATRIX_WIDTH);
@@ -93,8 +102,7 @@ void waterEffect() {
       int dy = y - centerY;
       float distance = sqrt(dx * dx + dy * dy);
       if (int(distance) == frame % maxRadius) {
-        int index = y * MATRIX_WIDTH + x;
-        strip.setPixelColor(index, strip.Color(255, 255, 255));
+        updateLED(x, y, 255, 255, 255);
       }
     }
   }
@@ -104,16 +112,14 @@ void waterEffect() {
   if (frame >= maxRadius) {
     frame = 0;
   }
-  delay(180);
+  delay(110);
 }
 
 void fireEffect() {
-  static int frame = 0;
-  frame++;
+  strip.clear();
 
   for (int y = 0; y < MATRIX_WIDTH; y++) {
     for (int x = 0; x < MATRIX_WIDTH; x++) {
-      int index = y * MATRIX_WIDTH + x;
       int flicker = random(100, 255 - y * 10); // fade upward
       int r = 255;
       int g = min(flicker, 180);
@@ -125,14 +131,8 @@ void fireEffect() {
         g = 255;
         b = 100;
       }
-
-      strip.setPixelColor(index, strip.Color(r, g, b));
+      updateLED(x, y, r, g, b);
     }
-  }
-
-  // Flame flicker movement effect
-  if (frame % 5 == 0) {
-    strip.setBrightness(random(40, 80));
   }
 
   strip.show();

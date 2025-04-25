@@ -11,10 +11,16 @@ void stripSetUp(){
 
 void updateLED(int row, int col, int r, int g, int b) {
   int index;
-  if (row % 2 != 0) {  // Even rows (left to right)
+  if (MATRIX_WIDTH >= 16){
+    // ZIG ZAG
+    if (row % 2 != 0) {  // Even rows (left to right)
+      index = row * MATRIX_WIDTH + col;
+    } else {  // Odd rows (right to left)
+      index = (row + 1) * MATRIX_WIDTH - col - 1;
+    }
+  }else{
+    // PROGRESIVE
     index = row * MATRIX_WIDTH + col;
-  } else {  // Odd rows (right to left)
-    index = (row + 1) * MATRIX_WIDTH - col - 1;
   }
   strip.setPixelColor(index, strip.Color(r, g, b));
 }

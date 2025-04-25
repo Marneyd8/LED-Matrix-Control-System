@@ -109,7 +109,7 @@ function DrawingPanel(props: { selectedColor: Rgb; setRgb: React.Dispatch<React.
       onMouseUp={() => setIsDrawing(false)}
       onMouseLeave={() => setIsDrawing(false)}
     >
-      <div ref={panelRef} className="ml-14">
+      <div ref={panelRef} className="ml-14 w-${48 * WIDTH / 8}">
         {pixelColors.map((rowColors, rowIndex) => (
           <Row
             key={rowIndex}
