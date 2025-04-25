@@ -24,11 +24,11 @@ wss.on('connection', (ws: WebSocket) => {
     if (msg === 'ARDUINO CONNECTED' && arduinoWs === null) {
       arduinoWs = ws;
       console.log('Arduino connection established');
-      ws.send("SUCESS");
+      ws.send("SUCCESS");
     } else if (msg === 'WEBSITE CONNECTED' && websiteWs === null) {
       websiteWs = ws;
       console.log('Website connection established');
-      ws.send("SUCESS");
+      ws.send("SUCCESS");
     } else {
       // Forward messages between Arduino and Website
       if (ws === websiteWs && arduinoWs) {

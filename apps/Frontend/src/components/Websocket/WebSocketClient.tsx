@@ -15,7 +15,7 @@ function WebSocketClient(props: {setWs: React.Dispatch<React.SetStateAction<WebS
 
     websocket.onmessage = (message) => {
       const msg = message.data;
-      if (msg === "SUCESS") {
+      if (msg === "SUCCESS") {
         console.log('Connected to WebSocket server');
         setConnected(true);
         setWs(websocket);
