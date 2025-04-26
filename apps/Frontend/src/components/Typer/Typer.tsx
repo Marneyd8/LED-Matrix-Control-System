@@ -14,7 +14,7 @@ function Typer() {
   const allowedCharacters = "A-Za-z0-9 .,!?#-$%&@><="; 
   const allowedRegex = new RegExp(`^[${allowedCharacters}]*$`); 
 
-  const handleTextChange = (e: { target: { value: any; }; }) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>)=> {
     const input = e.target.value;
     if (allowedRegex.test(input)) {
       setText(input);

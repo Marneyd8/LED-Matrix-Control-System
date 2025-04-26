@@ -1,6 +1,7 @@
+import { ActionType, ActionValue } from "../../types/data";
 import { Rgb } from "../../types/rgb";
 
-const DrawingPanelControls = (props: {selectedColor: Rgb, handleAction: (action: string, value: any) => void, brightness: number, handleExport: () => void }) => {
+const DrawingPanelControls = (props: {selectedColor: Rgb, handleAction: (action: ActionType, value: ActionValue) => void, brightness: number, handleExport: () => void }) => {
   const { selectedColor, handleAction, brightness, handleExport } = props;
   return (
     <div className="p-5">

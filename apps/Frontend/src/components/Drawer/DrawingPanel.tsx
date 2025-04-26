@@ -4,6 +4,7 @@ import { Rgb } from "../../types/rgb";
 import { useWebSocket } from "../Websocket/WebSocketContext";
 import DrawingPanelControls from "./DrawingPanelControls";
 import Row from "./Row";
+import { ActionType, ActionValue, Data } from "../../types/data";
 
 function DrawingPanel(props: { selectedColor: Rgb; setRgb: React.Dispatch<React.SetStateAction<Rgb>> }) {
   const { selectedColor, setRgb } = props;
@@ -67,13 +68,13 @@ function DrawingPanel(props: { selectedColor: Rgb; setRgb: React.Dispatch<React.
   }, [ws, handleMessage]);
 
   // Handles actions
-  const handleAction = useCallback((action: string, value: any) => {
-    let data: { action: string;[key: string]: any } | null = null;
+  const handleAction = useCallback((action: ActionType, value: ActionValue) => {
+    let data: Data | null = null;
 
-    if (action === "FILL") {
+    if (action === "FILL" && typeof value === "object" && value !== null) {
       setRgb(value);
       data = { action: "FILL", r: value.r, g: value.g, b: value.b };
-    } else if (action === "BRIGHTNESS") {
+    } else if (action === "BRIGHTNESS"  && typeof value === "number") {
       setBrightness(value);
       data = { action: "BRIGHTNESS", value };
     }
